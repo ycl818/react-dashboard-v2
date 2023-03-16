@@ -1,24 +1,33 @@
-import logo from './logo.svg';
-import './App.css';
+import { Routes, Route } from 'react-router-dom'
+import { Dashboard, EditPage, ViewPage } from './pages';
+import Navbar from './components/Navbar'
+import { Container } from '@mui/system';
+import { CssBaseline, Grid } from '@mui/material';
+import { useReducer } from 'react';
+import { ChartContext, chartReducer, initChartState } from './store/chartStore';
+import { DashboardContext, dashboardReducer, initDashboardState } from './store/dashboardStore';
 
 function App() {
+
+  const reducerChart = useReducer(chartReducer, initChartState)
+  const reducerDashboard = useReducer(dashboardReducer, initDashboardState)
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <DashboardContext.Provider value={reducerDashboard}>
+      <ChartContext.Provider value={reducerChart}>
+        <Navbar/> 
+   
+        <Container maxWidth={false} disableGutters sx={{overflow:"hidden", backgroundColor: "#19233C",
+        height:"100%" }}  >
+        
+            <Routes>
+              <Route path='/' element={ <Dashboard /> }></Route>
+              <Route path='/:title/edit' element={ <EditPage /> }></Route>
+              <Route path='/:title/view' element={ <ViewPage /> }></Route>
+            </Routes>
+        </Container>
+      </ChartContext.Provider>
+    </DashboardContext.Provider>
   );
 }
 
