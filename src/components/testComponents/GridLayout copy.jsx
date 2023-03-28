@@ -1,4 +1,4 @@
-import React, { useMemo, useReducer, useState } from "react";
+import React, { useReducer, useState } from "react";
 import { Responsive, WidthProvider } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
@@ -7,8 +7,6 @@ import DropdownTitle from "../components/DropdownTitle";
 import { Box, Button, Typography } from "@mui/material";
 import GraphTypeSwitcher from "./GraphTypeSwitcher";
 import { v4 as uuidv4 } from "uuid";
-import { useSelector, useDispatch } from "react-redux";
-import { addWidget, deleteWidget, modifyLayouts } from "../store";
 
 const data = [
   {
@@ -55,34 +53,53 @@ const data = [
   },
 ];
 
-const GridLayout = ({ chartState }) => {
-  const ResponsiveReactGridLayout = useMemo(
-    () => WidthProvider(Responsive),
-    []
-  );
+const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
-  const dispatch = useDispatch();
-  const widgetA = useSelector((state) => state.widget.widgetArray);
-  const layouts = useSelector((state) => state.widget.layouts);
-  console.log(widgetA);
+const GridLayout = ({ chartState }) => {
   const title = `${chartState.title}` || "NewTitle";
 
   //   console.log("title is here:", title)
+  const [layouts, setLayouts] = useState(null);
+  const [widgetArray, setWidgetArray] = useState([
+    { i: uuidv4(), x: 0, y: 0, w: 4, h: 1.5 },
+  ]);
 
   const handleModify = (layouts, layout) => {
-    dispatch(modifyLayouts(layouts, layout));
+    const tempArray = widgetArray;
+    setLayouts(layout);
+    layouts?.map((position) => {
+      tempArray[Number(position.i)].x = position.x;
+      tempArray[Number(position.i)].y = position.y;
+      tempArray[Number(position.i)].width = position.w;
+      tempArray[Number(position.i)].height = position.h;
+    });
+    setWidgetArray(tempArray);
+  };
+
+  const handleAdd = () => {
+    setWidgetArray([
+      ...widgetArray,
+      { i: uuidv4(), x: 0, y: -1, w: 4, h: 1.5 },
+      //   { i: "Graph" + (widgetArray.length + 1), x: 0, y: 0, w: 1, h: 1 },
+    ]);
+    console.log(widgetArray);
   };
 
   const handleDelete = (key) => {
-    dispatch(deleteWidget(key));
+    const tempArray = widgetArray.slice();
+    const index = tempArray.indexOf(tempArray.find((data) => data.i === key));
+    tempArray.splice(index, 1);
+    setWidgetArray(tempArray);
   };
+
+  console.log(widgetArray);
 
   return (
     <Box sx={{ height: "100%" }}>
       {/* <button className="btn primary" >Add Widget</button> */}
-      {/* <Button variant="contained" onClick={() => handleAdd()}>
+      <Button variant="contained" onClick={() => handleAdd()}>
         Add Widget
-      </Button> */}
+      </Button>
       <ResponsiveReactGridLayout
         style={{ display: "flex" }}
         onLayoutChange={handleModify}
@@ -100,12 +117,12 @@ const GridLayout = ({ chartState }) => {
           xxs: [20, 20],
         }}
       >
-        {widgetA?.map((widget, index) => {
+        {widgetArray?.map((widget, index) => {
           return (
             <Box
               component="div"
               className="reactGridItem"
-              key={widget.i}
+              key={index}
               data-grid={{
                 x: widget?.x,
                 y: widget?.y,
@@ -121,7 +138,7 @@ const GridLayout = ({ chartState }) => {
               }}
             >
               <DropdownTitle title={`${chartState.title}` || "New Title"} />
-
+              <br />
               {/* <Barchart height="100%"/> */}
 
               {chartState.type !== "" ? (
@@ -144,7 +161,7 @@ const GridLayout = ({ chartState }) => {
                   <Button
                     component={Link}
                     to={`/${title}/edit`}
-                    sx={{ width: "100%", height: "70%", marginTop: "-30" }}
+                    sx={{ width: "100%", height: "100%" }}
                   >
                     <Typography variant="h5" sx={{ marginTop: "1rem" }}>
                       Add a new panel
