@@ -8,3 +8,7 @@ body {
     
     overflow: auto;
 }
+
+#root {
+    min-height: 100vh;
+}

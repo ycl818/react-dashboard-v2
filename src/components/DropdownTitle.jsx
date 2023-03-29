@@ -18,7 +18,7 @@ const DropdownTitle = ({ title }) => {
   };
 
   return (
-    <div>
+    <>
       <Button
         id="fade-button"
         aria-controls={open ? "fade-menu" : undefined}
@@ -69,7 +69,7 @@ const DropdownTitle = ({ title }) => {
           </Link>
         </MenuItem>
       </Menu>
-    </div>
+    </>
   );
 };
 

@@ -3,14 +3,11 @@ import { createSlice, nanoid } from "@reduxjs/toolkit";
 const widgetSlice = createSlice({
   name: "widgets",
   initialState: {
-    layouts: [{ i: nanoid(), x: 0, y: 0, w: 4, h: 1.5 }],
     widgetArray: [{ i: nanoid(), x: 0, y: 0, w: 4, h: 1.5 }],
   },
   reducers: {
     modifyLayouts: (state, action) => {
-      const tempArray = [...state.widgetArray];
-      console.log(action.payload);
-      state.layouts = action.payload;
+      const tempArray = state.widgetArray.map((widget) => ({ ...widget }));
       action.payload?.map((position) => {
         const widgetIndex = tempArray.findIndex(
           (widget) => widget.i === position.i

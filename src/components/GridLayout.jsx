@@ -56,21 +56,24 @@ const data = [
 ];
 
 const GridLayout = ({ chartState }) => {
-  const ResponsiveReactGridLayout = useMemo(
-    () => WidthProvider(Responsive),
-    []
-  );
+  const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
   const dispatch = useDispatch();
   const widgetA = useSelector((state) => state.widget.widgetArray);
-  const layouts = useSelector((state) => state.widget.layouts);
-  console.log(widgetA);
+  //const layouts = useSelector((state) => state.widget.widgetArray);
+
+  const saveLayout = localStorage.getItem("grid-layout");
+  const layoutSave = saveLayout ? JSON.parse(saveLayout) : widgetA;
+
   const title = `${chartState.title}` || "NewTitle";
 
   //   console.log("title is here:", title)
 
-  const handleModify = (layouts, layout) => {
-    dispatch(modifyLayouts(layouts, layout));
+  const handleModify = (layout, layouts) => {
+    console.log("layouts: ~~", layout);
+
+    // dispatch(modifyLayouts(layouts, layout));
+    localStorage.setItem("grid-layout", JSON.stringify(layout));
   };
 
   const handleDelete = (key) => {
@@ -86,10 +89,10 @@ const GridLayout = ({ chartState }) => {
       <ResponsiveReactGridLayout
         style={{ display: "flex" }}
         onLayoutChange={handleModify}
-        verticalCompact={true}
-        layout={layouts}
+        //verticalCompact={true}
+        layout={layoutSave}
         breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
-        preventCollision={false}
+        //preventCollision={false}
         cols={{ lg: 8, md: 8, sm: 6, xs: 4, xxs: 2 }}
         autoSize={true}
         margin={{
