@@ -2,11 +2,15 @@ import React, { useContext } from "react";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import { ChartContext } from "../../store/chartStore";
+import { useDispatch } from "react-redux";
+import { updateDataType } from "../../store";
 
-const ComboBox = () => {
+const ComboBox = ({ panelID }) => {
   const charts = ["Line Chart", "Bar Chart", "Area Chart", "Pie Chart"];
   const [chartState, dispatch] = useContext(ChartContext);
   console.log(chartState);
+
+  const dispatch1 = useDispatch();
 
   return (
     <Autocomplete
@@ -21,6 +25,8 @@ const ComboBox = () => {
           type: "CHANGE_CHART_TYPE",
           payload: e.target.textContent,
         });
+        const selectedType = e.target.textContent;
+        dispatch1(updateDataType({ selectedType, panelID }));
       }}
     />
   );

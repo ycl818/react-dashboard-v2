@@ -12,7 +12,7 @@ import { addWidget, deleteWidget, modifyLayouts } from "../store";
 
 const GridLayout = ({ chartState }) => {
   const ResponsiveReactGridLayout = WidthProvider(Responsive);
-
+  console.log(chartState);
   const dispatch = useDispatch();
   const widgetA = useSelector((state) => state.widget.widgetArray);
   //const layouts = useSelector((state) => state.widget.widgetArray);
@@ -29,8 +29,8 @@ const GridLayout = ({ chartState }) => {
   const handleModify = (layout, layouts) => {
     console.log("layouts: ~~", layout);
 
-    // dispatch(modifyLayouts(layouts, layout));
-    localStorage.setItem("grid-layout", JSON.stringify(layout));
+    //dispatch(modifyLayouts({ layout, layouts }));
+    //localStorage.setItem("grid-layout", JSON.stringify(layout));
   };
 
   const handleDelete = (key) => {
@@ -101,7 +101,7 @@ const GridLayout = ({ chartState }) => {
                     p={3}
                   >
                     <GraphTypeSwitcher
-                      type={`${chartState.type}`}
+                      type={widget.data.dataType}
                       data={widget.data.dataDetail}
                       width={500}
                       height={300}

@@ -7,7 +7,7 @@ const widgetSlice = createSlice({
       {
         i: nanoid(),
         x: 0,
-        y: 0,
+        y: 100,
         w: 4,
         h: 1.5,
         data: { datasource: null, dataType: null, dataDetail: null },
@@ -16,10 +16,11 @@ const widgetSlice = createSlice({
   },
   reducers: {
     updateDataType: (state, action) => {
+      console.log(action);
       const panelIndex = state.widgetArray.findIndex(
         (panel) => panel.i === action.payload.panelID
       );
-      state.widgetArray[panelIndex].data.dataType = action.payload.name;
+      state.widgetArray[panelIndex].data.dataType = action.payload.selectedType;
     },
     updateDataSource: (state, action) => {
       const panelIndex = state.widgetArray.findIndex(
@@ -36,7 +37,12 @@ const widgetSlice = createSlice({
       state.widgetArray[panelIndex].data.dataDetail = action.payload.data;
     },
     modifyLayouts: (state, action) => {
-      const tempArray = state.widgetArray.map((widget) => ({ ...widget }));
+      const tempArray = state.widgetArray.map((widget) => ({
+        ...widget,
+        data: { ...widget.data },
+      }));
+      console.log(tempArray);
+      console.log(action);
       action.payload?.map((position) => {
         const widgetIndex = tempArray.findIndex(
           (widget) => widget.i === position.i
@@ -51,12 +57,13 @@ const widgetSlice = createSlice({
       state.widgetArray = tempArray;
     },
     addWidget: (state) => {
+      const panelNumber = state.widgetArray.length;
       state.widgetArray = [
         ...state.widgetArray,
         {
           i: nanoid(),
           x: 0,
-          y: -1,
+          y: -1.5 * panelNumber,
           w: 4,
           h: 1.5,
           data: { datasource: null, dataType: null, dataDetail: null },
