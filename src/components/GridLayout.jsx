@@ -10,60 +10,17 @@ import { v4 as uuidv4 } from "uuid";
 import { useSelector, useDispatch } from "react-redux";
 import { addWidget, deleteWidget, modifyLayouts } from "../store";
 
-const data = [
-  {
-    name: "Page A",
-    uv: 4000,
-    pv: 2400,
-    amt: 2400,
-  },
-  {
-    name: "Page B",
-    uv: 3000,
-    pv: 1398,
-    amt: 2210,
-  },
-  {
-    name: "Page C",
-    uv: 2000,
-    pv: 9800,
-    amt: 2290,
-  },
-  {
-    name: "Page D",
-    uv: 2780,
-    pv: 3908,
-    amt: 2000,
-  },
-  {
-    name: "Page E",
-    uv: 1890,
-    pv: 4800,
-    amt: 2181,
-  },
-  {
-    name: "Page F",
-    uv: 2390,
-    pv: 3800,
-    amt: 2500,
-  },
-  {
-    name: "Page G",
-    uv: 3490,
-    pv: 4300,
-    amt: 2100,
-  },
-];
-
 const GridLayout = ({ chartState }) => {
   const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
   const dispatch = useDispatch();
   const widgetA = useSelector((state) => state.widget.widgetArray);
   //const layouts = useSelector((state) => state.widget.widgetArray);
-
+  console.log(widgetA);
+  console.log(widgetA[0].data.dataDetail);
   const saveLayout = localStorage.getItem("grid-layout");
   const layoutSave = saveLayout ? JSON.parse(saveLayout) : widgetA;
+  console.log(layoutSave);
 
   const title = `${chartState.title}` || "NewTitle";
 
@@ -104,6 +61,12 @@ const GridLayout = ({ chartState }) => {
         }}
       >
         {widgetA?.map((widget, index) => {
+          console.log(widget.data);
+          let keysArry = [];
+          if (widget.data?.dataDetail) {
+            keysArry = Object.keys(widget.data.dataDetail[0]);
+            console.log(keysArry);
+          }
           return (
             <Box
               component="div"
@@ -123,11 +86,14 @@ const GridLayout = ({ chartState }) => {
                 isResizable: true,
               }}
             >
-              <DropdownTitle title={`${chartState.title}` || "New Title"} />
+              <DropdownTitle
+                panelID={widget.i}
+                title={`${chartState.title}` || "New Title"}
+              />
 
               {/* <Barchart height="100%"/> */}
 
-              {chartState.type !== "" ? (
+              {widget.data?.datasource ? (
                 <>
                   <Box
                     component="div"
@@ -136,9 +102,11 @@ const GridLayout = ({ chartState }) => {
                   >
                     <GraphTypeSwitcher
                       type={`${chartState.type}`}
-                      data={data}
+                      data={widget.data.dataDetail}
                       width={500}
                       height={300}
+                      dataKey={keysArry[1]}
+                      XaxisName={"name"}
                     />
                   </Box>
                 </>
@@ -146,7 +114,7 @@ const GridLayout = ({ chartState }) => {
                 <>
                   <Button
                     component={Link}
-                    to={`/${title}/edit`}
+                    to={`/${widget.i}/edit`}
                     sx={{ width: "100%", height: "70%", marginTop: "-30" }}
                   >
                     <Typography variant="h5" sx={{ marginTop: "1rem" }}>

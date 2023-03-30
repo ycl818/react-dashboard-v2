@@ -3,9 +3,38 @@ import { createSlice, nanoid } from "@reduxjs/toolkit";
 const widgetSlice = createSlice({
   name: "widgets",
   initialState: {
-    widgetArray: [{ i: nanoid(), x: 0, y: 0, w: 4, h: 1.5 }],
+    widgetArray: [
+      {
+        i: nanoid(),
+        x: 0,
+        y: 0,
+        w: 4,
+        h: 1.5,
+        data: { datasource: null, dataType: null, dataDetail: null },
+      },
+    ],
   },
   reducers: {
+    updateDataType: (state, action) => {
+      const panelIndex = state.widgetArray.findIndex(
+        (panel) => panel.i === action.payload.panelID
+      );
+      state.widgetArray[panelIndex].data.dataType = action.payload.name;
+    },
+    updateDataSource: (state, action) => {
+      const panelIndex = state.widgetArray.findIndex(
+        (panel) => panel.i === action.payload.panelID
+      );
+      state.widgetArray[panelIndex].data.datasource =
+        action.payload.datasourceName;
+    },
+    updateData: (state, action) => {
+      console.log(action);
+      const panelIndex = state.widgetArray.findIndex(
+        (panel) => panel.i === action.payload.panelID
+      );
+      state.widgetArray[panelIndex].data.dataDetail = action.payload.data;
+    },
     modifyLayouts: (state, action) => {
       const tempArray = state.widgetArray.map((widget) => ({ ...widget }));
       action.payload?.map((position) => {
@@ -24,7 +53,14 @@ const widgetSlice = createSlice({
     addWidget: (state) => {
       state.widgetArray = [
         ...state.widgetArray,
-        { i: nanoid(), x: 0, y: -1, w: 4, h: 1.5 },
+        {
+          i: nanoid(),
+          x: 0,
+          y: -1,
+          w: 4,
+          h: 1.5,
+          data: { datasource: null, dataType: null, dataDetail: null },
+        },
       ];
     },
     deleteWidget: (state, action) => {
@@ -38,5 +74,12 @@ const widgetSlice = createSlice({
   },
 });
 
-export const { modifyLayouts, addWidget, deleteWidget } = widgetSlice.actions;
+export const {
+  modifyLayouts,
+  addWidget,
+  deleteWidget,
+  updateData,
+  updateDataSource,
+  updateDataType,
+} = widgetSlice.actions;
 export const widgetReducer = widgetSlice.reducer;

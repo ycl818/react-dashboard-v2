@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 import { style } from "@mui/system";
 import { Typography } from "@mui/material";
 
-const DropdownTitle = ({ title }) => {
+const DropdownTitle = ({ title, panelID }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (e) => {
@@ -55,7 +55,7 @@ const DropdownTitle = ({ title }) => {
         <MenuItem>
           <Link
             style={{ textDecoration: "none", color: "white" }}
-            to={`${title}/view`}
+            to={`${panelID}/view`}
           >
             View
           </Link>
@@ -63,7 +63,7 @@ const DropdownTitle = ({ title }) => {
         <MenuItem>
           <Link
             style={{ textDecoration: "none", color: "white" }}
-            to={`${title}/edit`}
+            to={`${panelID}/edit`}
           >
             Edit
           </Link>

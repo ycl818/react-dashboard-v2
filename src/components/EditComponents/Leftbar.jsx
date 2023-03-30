@@ -9,7 +9,7 @@ import SplitPane, { Pane, SashContent } from "split-pane-react";
 import "split-pane-react/esm/themes/default.css";
 import { Rotate90DegreesCcw } from "@mui/icons-material";
 
-const Leftbar = () => {
+const Leftbar = ({ panelID }) => {
   const [sizes, setSizes] = useState([400]);
 
   return (
@@ -39,9 +39,9 @@ const Leftbar = () => {
           )}
         >
           <Pane maxSize="80%">
-            <GraphBolck />
+            <GraphBolck panelID={panelID} />
           </Pane>
-          <DataSourceBlock />
+          <DataSourceBlock panelID={panelID} />
         </SplitPane>
       </Box>
     </Box>

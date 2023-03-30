@@ -3,9 +3,9 @@ import { Responsive, WidthProvider } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import { Link } from "react-router-dom";
-import DropdownTitle from "../components/DropdownTitle";
+import DropdownTitle from "../DropdownTitle";
 import { Box, Button, Typography } from "@mui/material";
-import GraphTypeSwitcher from "./GraphTypeSwitcher";
+import GraphTypeSwitcher from "../GraphTypeSwitcher";
 import { v4 as uuidv4 } from "uuid";
 
 const data = [
