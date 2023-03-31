@@ -15,9 +15,12 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import MenuIcon from "@mui/icons-material/Menu";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
+import FileDownloadIcon from "@mui/icons-material/FileDownload";
+import FileUploadIcon from "@mui/icons-material/FileUpload";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { addWidget } from "../store";
+import { addWidget, store, loadUploadData } from "../store";
+import { useState } from "react";
 
 export default function ButtonAppBar() {
   const navigate = useNavigate();
@@ -30,6 +33,73 @@ export default function ButtonAppBar() {
 
   const handleAddPanel = () => {
     dispatch(addWidget());
+  };
+
+  const handleDownloadPanel = () => {
+    const data = store.getState().widget.widgetArray;
+
+    // file name time
+    let currentYear = new Date().getFullYear().toString();
+    let currentMonth = (new Date().getMonth() + 1).toString();
+    let currentDate = new Date().getDate().toString();
+    let currentHour = new Date().getHours().toString();
+    let currentMin = new Date().getMinutes().toString();
+    let currentSec = new Date().getSeconds().toString();
+
+    if (currentMonth < 10) {
+      currentMonth = "0" + currentMonth;
+    }
+    if (currentDate < 10) {
+      currentDate = "0" + currentDate;
+    }
+    if (currentHour < 10) {
+      currentHour = "0" + currentHour;
+    }
+    if (currentMin < 10) {
+      currentMin = "0" + currentMin;
+    }
+    if (currentSec < 10) {
+      currentSec = "0" + currentSec;
+    }
+    let currentTimeString =
+      currentYear +
+      currentMonth +
+      currentDate +
+      "_" +
+      currentHour +
+      currentMin +
+      currentSec;
+
+    // create file in browser
+    const fileName = `${currentTimeString}_DashboardConfig`;
+    const json = JSON.stringify(data, null, 2);
+    const blob = new Blob([json], { type: "application/json" });
+    const href = URL.createObjectURL(blob);
+
+    // create "a" HTLM element with href to file
+    const link = document.createElement("a");
+    link.href = href;
+    link.download = fileName + ".json";
+    document.body.appendChild(link);
+    link.click();
+
+    // clean up "a" element & remove ObjectURL
+    document.body.removeChild(link);
+    URL.revokeObjectURL(href);
+  };
+
+  const handleUploadPanel = (e) => {
+    console.log(e.target.files);
+    const fileReader = new FileReader();
+    fileReader.readAsText(e.target.files[0], "UTF-8");
+    fileReader.onload = (e) => {
+      console.log("e.target.result", e.target.result);
+      const fileData = JSON.parse(e.target.result);
+      dispatch(loadUploadData({ fileData }));
+    };
+    if (fileReader.readyState === 2) {
+      fileReader.abort();
+    }
   };
 
   return (
@@ -58,7 +128,7 @@ export default function ButtonAppBar() {
             {pathname !== "/" ? "New Dashboard / Edit Panel" : "New Dashboard"}
           </Typography>
           {/* <Button color="inherit">
-           
+      
             Add Panel
           </Button> */}
 
@@ -66,6 +136,33 @@ export default function ButtonAppBar() {
             <Tooltip title="Add Panel">
               <IconButton onClick={handleAddPanel}>
                 <DashboardCustomizeIcon />
+              </IconButton>
+            </Tooltip>
+          ) : (
+            ""
+          )}
+
+          {pathname === "/" ? (
+            <Tooltip title="Download Panel">
+              <IconButton>
+                <FileDownloadIcon onClick={handleDownloadPanel} />
+              </IconButton>
+            </Tooltip>
+          ) : (
+            ""
+          )}
+
+          {pathname === "/" ? (
+            <Tooltip title="Upload Panel">
+              <IconButton component="label">
+                <FileUploadIcon />
+                <input
+                  id="uploadFileID"
+                  hidden
+                  accept=".json"
+                  type="file"
+                  onChange={handleUploadPanel}
+                />
               </IconButton>
             </Tooltip>
           ) : (

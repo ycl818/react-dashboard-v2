@@ -11,26 +11,34 @@ import { useSelector, useDispatch } from "react-redux";
 import { addWidget, deleteWidget, modifyLayouts } from "../store";
 
 const GridLayout = ({ chartState }) => {
-  const ResponsiveReactGridLayout = WidthProvider(Responsive);
+  const ResponsiveReactGridLayout = useMemo(
+    () => WidthProvider(Responsive),
+    []
+  );
   console.log(chartState);
   const dispatch = useDispatch();
   const widgetA = useSelector((state) => state.widget.widgetArray);
   //const layouts = useSelector((state) => state.widget.widgetArray);
   console.log(widgetA);
-  console.log(widgetA[0].data.dataDetail);
-  const saveLayout = localStorage.getItem("grid-layout");
-  const layoutSave = saveLayout ? JSON.parse(saveLayout) : widgetA;
-  console.log(layoutSave);
+  //console.log(widgetA[0].data.dataDetail);
+  //const saveLayout = localStorage.getItem("grid-layout");
+  //const layoutSave = saveLayout ? JSON.parse(saveLayout) : widgetA;
+  const layoutSave = useMemo(() => widgetA, [widgetA]);
+  console.log("layoutSave: ", layoutSave);
+
+  const [layout, setLayout] = useState(layoutSave);
 
   const title = `${chartState.title}` || "NewTitle";
 
   //   console.log("title is here:", title)
 
-  const handleModify = (layout, layouts) => {
-    console.log("layouts: ~~", layout);
+  const handleModify = (newLayout) => {
+    console.log("layouts: ~~", newLayout);
 
-    //dispatch(modifyLayouts({ layout, layouts }));
-    //localStorage.setItem("grid-layout", JSON.stringify(layout));
+    if (layout !== newLayout) {
+      setLayout(newLayout);
+      dispatch(modifyLayouts({ layouts: newLayout }));
+    }
   };
 
   const handleDelete = (key) => {
@@ -47,7 +55,7 @@ const GridLayout = ({ chartState }) => {
         style={{ display: "flex" }}
         onLayoutChange={handleModify}
         //verticalCompact={true}
-        layout={layoutSave}
+        layout={layout}
         breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
         //preventCollision={false}
         cols={{ lg: 8, md: 8, sm: 6, xs: 4, xxs: 2 }}
@@ -106,7 +114,7 @@ const GridLayout = ({ chartState }) => {
                       width={500}
                       height={300}
                       dataKey={keysArry[1]}
-                      XaxisName={"name"}
+                      XaxisName={keysArry[0]}
                     />
                   </Box>
                 </>
@@ -116,7 +124,12 @@ const GridLayout = ({ chartState }) => {
                     component={Link}
                     to={`/${widget.i}/edit`}
                     sx={{ width: "100%", height: "70%", marginTop: "-30" }}
+                    className="addPanelbtn"
                   >
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
                     <Typography variant="h5" sx={{ marginTop: "1rem" }}>
                       Add a new panel
                     </Typography>

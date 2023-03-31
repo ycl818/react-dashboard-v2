@@ -7,7 +7,7 @@ const widgetSlice = createSlice({
       {
         i: nanoid(),
         x: 0,
-        y: 100,
+        y: 0,
         w: 4,
         h: 1.5,
         data: { datasource: null, dataType: null, dataDetail: null },
@@ -15,6 +15,10 @@ const widgetSlice = createSlice({
     ],
   },
   reducers: {
+    loadUploadData: (state, action) => {
+      console.log(action.payload.fileData);
+      state.widgetArray = action.payload.fileData;
+    },
     updateDataType: (state, action) => {
       console.log(action);
       const panelIndex = state.widgetArray.findIndex(
@@ -37,13 +41,14 @@ const widgetSlice = createSlice({
       state.widgetArray[panelIndex].data.dataDetail = action.payload.data;
     },
     modifyLayouts: (state, action) => {
-      const tempArray = state.widgetArray.map((widget) => ({
-        ...widget,
-        data: { ...widget.data },
-      }));
-      console.log(tempArray);
+      // const tempArray = state.widgetArray.map((widget) => ({
+      //   ...widget,
+      //   data: { ...widget.data },
+      // }));
+      const tempArray = [...state.widgetArray];
+      console.log("temp:", tempArray);
       console.log(action);
-      action.payload?.map((position) => {
+      action.payload.layouts?.map((position) => {
         const widgetIndex = tempArray.findIndex(
           (widget) => widget.i === position.i
         );
@@ -88,5 +93,6 @@ export const {
   updateData,
   updateDataSource,
   updateDataType,
+  loadUploadData,
 } = widgetSlice.actions;
 export const widgetReducer = widgetSlice.reducer;
