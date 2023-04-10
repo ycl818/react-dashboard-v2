@@ -13,8 +13,19 @@ const EditPage = () => {
   const [sizes, setSizes] = useState([1200]);
 
   return (
-    <Box height="100vh" display="flex" overflow="hidden">
-      <Box component="div" className="demo-wrap" flex={1} overflow="auto">
+    <Box
+      style={{ height: "calc(100vh - 48px)" }}
+      display="flex"
+      overflow="auto"
+      flexDirection="column"
+    >
+      <Box
+        component="div"
+        className="demo-wrap"
+        flex={1}
+        overflow="hidden"
+        // style={{ margin: 0 }}
+      >
         <SplitPane
           sizes={sizes}
           onChange={setSizes}

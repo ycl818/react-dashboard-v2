@@ -13,14 +13,19 @@ const Leftbar = ({ panelID }) => {
   const [sizes, setSizes] = useState([400]);
 
   return (
-    <Box display="flex" height="100vh" flexDirection="column" overflow="hidden">
+    <Box
+      display="flex"
+      style={{ height: "calc(100vh - 100px)" }}
+      flexDirection="column"
+    >
       <Box
         component="div"
         className="demo-wrap"
         bgcolor={`rgba(0,0,0,0.2 )`}
         flex={1}
         color={"text.primary"}
-        overflow="auto"
+        overflow="hidden"
+        //sx={{ marginBottom: 0 }}
       >
         <SplitPane
           split="horizontal"
@@ -41,7 +46,9 @@ const Leftbar = ({ panelID }) => {
           <Pane maxSize="80%">
             <GraphBolck panelID={panelID} />
           </Pane>
-          <DataSourceBlock panelID={panelID} />
+          <Pane>
+            <DataSourceBlock panelID={panelID} />
+          </Pane>
         </SplitPane>
       </Box>
     </Box>

@@ -19,9 +19,11 @@ function App() {
         maxWidth={false}
         disableGutters
         sx={{
-          overflow: "hidden",
+          overflow: "auto",
           backgroundColor: "#19233C",
-          height: "100%",
+        }}
+        style={{
+          minHeight: "calc(100vh - 660px)",
         }}
       >
         <Routes>

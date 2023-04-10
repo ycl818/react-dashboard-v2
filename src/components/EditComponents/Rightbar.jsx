@@ -50,7 +50,9 @@ const Rightbar = ({ panelID }) => {
       className="Block"
       flex={1}
       p={2}
-      sx={{ display: { xs: "none", sm: "block" }, height: "100vh" }}
+      style={{ height: "calc(100vh - 100px)" }}
+      sx={{ display: { xs: "none", sm: "block" } }}
+      overflow="hidden"
     >
       <ComboBox panelID={panelID} />
     </Box>

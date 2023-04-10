@@ -1,19 +1,19 @@
-import { Box, Stack } from '@mui/material'
-import Sidebar from '../components/EditComponents/Sidebar'
-import React from 'react'
-import Leftbar from '../components/EditComponents/Leftbar'
-import Rightbar from '../components/EditComponents/Rightbar'
+import { Box, Stack } from "@mui/material";
+import Sidebar from "../components/EditComponents/Sidebar";
+import React from "react";
+import Leftbar from "../components/EditComponents/Leftbar";
+import Rightbar from "../components/EditComponents/Rightbar";
 
 const ViewPage = () => {
   return (
-    <Box>
+    <Box height="95vh" overflow="hidden">
       <Stack direction="row" spacing={2} justifyContent="space-between">
-        <Sidebar/>
-        <Leftbar/>
-        <Rightbar/>
+        <Sidebar />
+        <Leftbar />
+        <Rightbar />
       </Stack>
     </Box>
-  )
-}
+  );
+};
 
-export default ViewPage
+export default ViewPage;
