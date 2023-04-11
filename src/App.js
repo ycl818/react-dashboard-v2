@@ -2,7 +2,6 @@ import { Routes, Route } from "react-router-dom";
 import { Dashboard, EditPage, ViewPage } from "./pages";
 import Navbar from "./components/Navbar";
 import { Container } from "@mui/system";
-import { CssBaseline, Grid } from "@mui/material";
 import { useReducer } from "react";
 import { ChartContext, chartReducer, initChartState } from "./store/chartStore";
 
@@ -19,7 +18,7 @@ function App() {
         maxWidth={false}
         disableGutters
         sx={{
-          overflow: "auto",
+          overflow: "hidden",
           backgroundColor: "#19233C",
         }}
         style={{

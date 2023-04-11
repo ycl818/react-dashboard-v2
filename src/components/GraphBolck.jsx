@@ -1,33 +1,24 @@
 import { Box } from "@mui/material";
-import React, { useContext } from "react";
 import { useSelector } from "react-redux";
-import { ChartContext } from "../store/chartStore";
 import ChartNameField from "./EditComponents/ChartNameField";
 import GraphTypeSwitcher from "./GraphTypeSwitcher";
 
 const GraphBolck = ({ panelID }) => {
-  const [chartState, dispatch] = useContext(ChartContext);
-
-  const { dataDetail } = useSelector((state) => {
+  const { dataDetail, dataType } = useSelector((state) => {
     const panelArray = state.widget.widgetArray;
-    console.log(panelArray);
     const targetPanel = panelArray.filter((panel) => panel.i === panelID);
-    console.log(targetPanel);
+
     return {
       dataDetail: targetPanel[0]?.data?.dataDetail,
+      dataType: targetPanel[0]?.data?.dataType,
     };
   });
-  console.log(dataDetail);
+
   let keysArry = [];
   if (dataDetail) {
     keysArry = Object.keys(dataDetail[0]);
     console.log(keysArry);
   }
-  // const data = [
-  //   {
-  //     gppd: 1,
-  //   },
-  // ];
 
   return (
     <>
@@ -42,9 +33,9 @@ const GraphBolck = ({ panelID }) => {
         p={5}
         m={2}
       >
-        <ChartNameField />
+        <ChartNameField panelID={panelID} />
         <GraphTypeSwitcher
-          type={`${chartState.type}`}
+          type={dataType}
           data={dataDetail}
           width={500}
           height={300}
@@ -56,8 +47,4 @@ const GraphBolck = ({ panelID }) => {
   );
 };
 
-{
-  /* <GraphTypeSwitcher type={`${chartState.type}`} data={data} width={500} height={300}/>
-</Box> */
-}
 export default GraphBolck;

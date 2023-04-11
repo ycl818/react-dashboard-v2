@@ -1,4 +1,4 @@
-import React, { useMemo, useReducer, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Responsive, WidthProvider } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
@@ -6,16 +6,15 @@ import { Link } from "react-router-dom";
 import DropdownTitle from "../components/DropdownTitle";
 import { Box, Button, Typography } from "@mui/material";
 import GraphTypeSwitcher from "./GraphTypeSwitcher";
-import { v4 as uuidv4 } from "uuid";
 import { useSelector, useDispatch } from "react-redux";
-import { addWidget, deleteWidget, modifyLayouts } from "../store";
+import { modifyLayouts } from "../store";
 
-const GridLayout = ({ chartState }) => {
+const GridLayout = () => {
   const ResponsiveReactGridLayout = useMemo(
     () => WidthProvider(Responsive),
     []
   );
-  console.log(chartState);
+
   const dispatch = useDispatch();
   const widgetA = useSelector((state) => state.widget.widgetArray);
   //const layouts = useSelector((state) => state.widget.widgetArray);
@@ -28,10 +27,6 @@ const GridLayout = ({ chartState }) => {
 
   const [layout, setLayout] = useState(layoutSave);
 
-  const title = `${chartState.title}` || "NewTitle";
-
-  //   console.log("title is here:", title)
-
   const handleModify = (newLayout) => {
     console.log("layouts: ~~", newLayout);
 
@@ -41,9 +36,9 @@ const GridLayout = ({ chartState }) => {
     }
   };
 
-  const handleDelete = (key) => {
-    dispatch(deleteWidget(key));
-  };
+  // const handleDelete = (key) => {
+  //   dispatch(deleteWidget(key));
+  // };
 
   return (
     <Box sx={{ height: "100%" }}>
@@ -96,7 +91,7 @@ const GridLayout = ({ chartState }) => {
             >
               <DropdownTitle
                 panelID={widget.i}
-                title={`${chartState.title}` || "New Title"}
+                title={widget.panelName || "New Title"}
               />
 
               {/* <Barchart height="100%"/> */}

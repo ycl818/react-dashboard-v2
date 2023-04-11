@@ -10,11 +10,19 @@ const widgetSlice = createSlice({
         y: 0,
         w: 4,
         h: 1.5,
+        panelName: "",
         data: { datasource: null, dataType: null, dataDetail: null },
       },
     ],
   },
   reducers: {
+    updatePanelName: (state, action) => {
+      console.log(action.payload);
+      const panelIndex = state.widgetArray.findIndex(
+        (panel) => panel.i === action.payload.panelID
+      );
+      state.widgetArray[panelIndex].panelName = action.payload.name;
+    },
     loadUploadData: (state, action) => {
       console.log(action.payload.fileData);
       state.widgetArray = action.payload.fileData;
@@ -48,7 +56,7 @@ const widgetSlice = createSlice({
       const tempArray = [...state.widgetArray];
       console.log("temp:", tempArray);
       console.log(action);
-      action.payload.layouts?.map((position) => {
+      action.payload.layouts?.forEach((position) => {
         const widgetIndex = tempArray.findIndex(
           (widget) => widget.i === position.i
         );
@@ -71,6 +79,7 @@ const widgetSlice = createSlice({
           y: -1.5 * panelNumber,
           w: 4,
           h: 1.5,
+          panelName: "",
           data: { datasource: null, dataType: null, dataDetail: null },
         },
       ];
@@ -94,5 +103,6 @@ export const {
   updateDataSource,
   updateDataType,
   loadUploadData,
+  updatePanelName,
 } = widgetSlice.actions;
 export const widgetReducer = widgetSlice.reducer;

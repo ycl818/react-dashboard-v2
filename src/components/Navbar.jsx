@@ -6,13 +6,12 @@ import {
   Typography,
   Button,
   IconButton,
-  styled,
   Tooltip,
 } from "@mui/material";
+import GridViewIcon from "@mui/icons-material/GridView";
 import DashboardCustomizeIcon from "@mui/icons-material/DashboardCustomize";
 import SaveIcon from "@mui/icons-material/Save";
 import SettingsIcon from "@mui/icons-material/Settings";
-import MenuIcon from "@mui/icons-material/Menu";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
@@ -20,16 +19,15 @@ import FileUploadIcon from "@mui/icons-material/FileUpload";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addWidget, store, loadUploadData } from "../store";
-import { useState } from "react";
 
 export default function ButtonAppBar() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const dispatch = useDispatch();
 
-  const Icons = styled(Box)(({ theme }) => ({
-    backgroundColor: "yellow",
-  }));
+  // const Icons = styled(Box)(({ theme }) => ({
+  //   backgroundColor: "yellow",
+  // }));
 
   const handleAddPanel = () => {
     dispatch(addWidget());
@@ -125,7 +123,14 @@ export default function ButtonAppBar() {
             ""
           )}
           <Typography variant="subtitle1" component="div" sx={{ flexGrow: 1 }}>
-            {pathname !== "/" ? "New Dashboard / Edit Panel" : "New Dashboard"}
+            {pathname !== "/" ? (
+              "New dashboard / Edit Panel"
+            ) : (
+              <>
+                <GridViewIcon sx={{ marginRight: "0.5rem" }} />
+                {"New dashboard"}
+              </>
+            )}
           </Typography>
           {/* <Button color="inherit">
       

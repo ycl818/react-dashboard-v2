@@ -1,13 +1,13 @@
 import { Box } from "@mui/material";
 import React from "react";
-import Barchart from "../Barchart";
 import GraphBolck from "../GraphBolck";
 import DataSourceBlock from "./DataSourceBlock";
 
 import { useState } from "react";
 import SplitPane, { Pane, SashContent } from "split-pane-react";
 import "split-pane-react/esm/themes/default.css";
-import { Rotate90DegreesCcw } from "@mui/icons-material";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 const Leftbar = ({ panelID }) => {
   const [sizes, setSizes] = useState([400]);
@@ -35,9 +35,10 @@ const Leftbar = ({ panelID }) => {
             <SashContent className="action-sash-wrap">
               <span className="action">
                 {sizes[0] !== 0 ? (
-                  "^"
+                  <ExpandLessIcon />
                 ) : (
-                  <div style={{ transform: `rotate(180deg)` }}>^</div>
+                  // <div style={{ transform: `rotate(180deg)` }}>^</div>
+                  <ExpandMoreIcon />
                 )}
               </span>
             </SashContent>
