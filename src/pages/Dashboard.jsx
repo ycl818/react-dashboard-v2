@@ -1,16 +1,20 @@
 import { Box } from "@mui/material";
-import { useContext } from "react";
+import { useEffect } from "react";
 import GridLayout from "../components/GridLayout";
-import { ChartContext } from "../store/chartStore";
-import { useSelector, useDispatch } from "react-redux";
+
+import { useDispatch } from "react-redux";
+import { fetchExistDashboard, useFetchWidgetDataQuery } from "../store";
 
 const Dashboard = () => {
-  const [chartState, dispatch] = useContext(ChartContext);
-  console.log(chartState);
+  const dispatch = useDispatch();
+  const { data, error, isFetching } = useFetchWidgetDataQuery();
 
+  // useEffect(() => {
+  //   data && dispatch(fetchExistDashboard({ data }));
+  // }, [data]);
   return (
     <Box height="100%">
-      <GridLayout chartState={chartState} />
+      <GridLayout />
     </Box>
   );
 };

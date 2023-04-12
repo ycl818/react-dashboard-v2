@@ -3,19 +3,39 @@ import { createSlice, nanoid } from "@reduxjs/toolkit";
 const widgetSlice = createSlice({
   name: "widgets",
   initialState: {
-    widgetArray: [
-      {
-        i: nanoid(),
-        x: 0,
-        y: 0,
-        w: 4,
-        h: 1.5,
-        panelName: "",
-        data: { datasource: null, dataType: null, dataDetail: null },
-      },
-    ],
+    widgetArray:
+      [
+        {
+          i: nanoid(),
+          x: 0,
+          y: 0,
+          w: 4,
+          h: 1.5,
+          panelName: "",
+          data: {
+            datasource: null,
+            datasource_url: null,
+            dataType: null,
+            dataDetail: null,
+          },
+        },
+      ] || [],
   },
   reducers: {
+    fetchExistDashboard: (state, action) => {
+      console.log(action.payload.data);
+      state.widgetArray = action.payload.data;
+    },
+    updateDataSourceWithURL: (state, action) => {
+      console.log(action.payload);
+      const panelIndex = state.widgetArray.findIndex(
+        (panel) => panel.i === action.payload.panelID
+      );
+      state.widgetArray[panelIndex].data.datasource_url =
+        action.payload.datasource_url;
+      state.widgetArray[panelIndex].data.datasource =
+        action.payload.datasourceName;
+    },
     updatePanelName: (state, action) => {
       console.log(action.payload);
       const panelIndex = state.widgetArray.findIndex(
@@ -80,7 +100,12 @@ const widgetSlice = createSlice({
           w: 4,
           h: 1.5,
           panelName: "",
-          data: { datasource: null, dataType: null, dataDetail: null },
+          data: {
+            datasource: null,
+            datasource_url: null,
+            dataType: null,
+            dataDetail: null,
+          },
         },
       ];
     },
@@ -104,5 +129,7 @@ export const {
   updateDataType,
   loadUploadData,
   updatePanelName,
+  updateDataSourceWithURL,
+  fetchExistDashboard,
 } = widgetSlice.actions;
 export const widgetReducer = widgetSlice.reducer;

@@ -1,11 +1,11 @@
 import * as React from "react";
-import Button from "@mui/material/Button";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import Fade from "@mui/material/Fade";
+// import Button from "@mui/material/Button";
+// import Menu from "@mui/material/Menu";
+// import MenuItem from "@mui/material/MenuItem";
+// import Fade from "@mui/material/Fade";
 import { Link } from "react-router-dom";
 import { style } from "@mui/system";
-import { Typography } from "@mui/material";
+import { Typography, Fade, MenuItem, Menu, Button } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import AutoFixHighSharpIcon from "@mui/icons-material/AutoFixHighSharp";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -106,7 +106,12 @@ const DropdownTitle = ({ title, panelID }) => {
             Edit
           </Link>
         </MenuItem>
-        <MenuItem onClick={handleInspect}>
+        <MenuItem
+          onClick={() => {
+            handleInspect();
+            handleClose();
+          }}
+        >
           <InfoIcon style={{ fontSize: "12px", marginRight: "0.5rem" }} />
           Inspect
         </MenuItem>

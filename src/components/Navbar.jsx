@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState } from "react";
 import {
   AppBar,
   Box,
@@ -19,10 +19,12 @@ import FileUploadIcon from "@mui/icons-material/FileUpload";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addWidget, store, loadUploadData } from "../store";
+import SettingsDrawer from "../pages/SettingsDrawer";
 
 export default function ButtonAppBar() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  console.log("file: Navbar.jsx:27 ~ ButtonAppBar ~ pathname:", pathname);
   const dispatch = useDispatch();
 
   // const Icons = styled(Box)(({ theme }) => ({
@@ -123,13 +125,15 @@ export default function ButtonAppBar() {
             ""
           )}
           <Typography variant="subtitle1" component="div" sx={{ flexGrow: 1 }}>
-            {pathname !== "/" ? (
-              "New dashboard / Edit Panel"
-            ) : (
+            {pathname === "/settings" ? (
+              "New dashboard / Settings"
+            ) : pathname === "/" ? (
               <>
                 <GridViewIcon sx={{ marginRight: "0.5rem" }} />
                 {"New dashboard"}
               </>
+            ) : (
+              "New dashboard / Edit Panel"
             )}
           </Typography>
           {/* <Button color="inherit">
@@ -201,7 +205,11 @@ export default function ButtonAppBar() {
           )}
 
           <Tooltip title="Settings">
-            <IconButton>
+            <IconButton
+              onClick={() => {
+                navigate("/settings");
+              }}
+            >
               <SettingsIcon />
             </IconButton>
           </Tooltip>

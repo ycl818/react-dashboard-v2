@@ -1,26 +1,43 @@
-import { Box, Button } from "@mui/material";
-import React, { useState } from "react";
+import { Box, Button, TextField } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { updateData, updateDataSource } from "../../store";
-import AceEditor from "react-ace";
-import { JSONTree } from "react-json-tree";
+import {
+  updateData,
+  updateDataSource,
+  updateDataSourceWithURL,
+} from "../../store";
 
 import "ace-builds/src-noconflict/mode-json";
 import "ace-builds/src-noconflict/theme-monokai";
 import "ace-builds/src-noconflict/ext-language_tools";
+import { useRef, useState } from "react";
+import axios from "axios";
+import InspectDrawer from "../InspectDrawer";
 
 const DataSourceBlock = ({ panelID }) => {
   const dispatch = useDispatch();
+  const textRef = useRef("");
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [fetchErrorMsg, setFetchErrorMsg] = useState("");
 
-  const { dataDetail } = useSelector((state) => {
+  const { datasource_url } = useSelector((state) => {
     const panelArray = state.widget.widgetArray;
     const targetPanel = panelArray.filter((panel) => panel.i === panelID);
     return {
-      dataDetail: targetPanel[0]?.data?.dataDetail,
+      datasource_url: targetPanel[0]?.data?.datasource_url,
     };
   });
+  const [textValue, setTextValue] = useState(datasource_url || "");
 
-  const [editorData, setEditorData] = useState(dataDetail || []);
+  const fetchURl = async () => {
+    try {
+      const response = await axios.get(`${textRef.current.value}`);
+      const data = response.data;
+      dispatch(updateData({ data, panelID }));
+      setFetchErrorMsg("");
+    } catch (error) {
+      setFetchErrorMsg(error.message);
+    }
+  };
 
   const data1 = [
     {
@@ -124,6 +141,13 @@ const DataSourceBlock = ({ panelID }) => {
       amt: 2100,
     },
   ];
+
+  const handleSetURL = (datasourceName, datasource_url, panelID) => {
+    dispatch(
+      updateDataSourceWithURL({ datasourceName, datasource_url, panelID })
+    );
+  };
+
   const handleSetData = (datasourceName, data, panelID) => {
     console.log(data);
     dispatch(updateData({ data, panelID }));
@@ -131,39 +155,73 @@ const DataSourceBlock = ({ panelID }) => {
   };
   //border: "1px solid black"
   return (
-    <Box component="div" sx={{}} overflow="hidden">
-      DataSourceBlock
-      <Button
-        onClick={() => {
-          handleSetData("test1", data1, panelID);
-          setEditorData(data1);
-        }}
-      >
-        test1 data
-      </Button>
-      <Button
-        onClick={() => {
-          handleSetData("test2", data2, panelID);
-          setEditorData(data2);
-        }}
-      >
-        test2 data
-      </Button>
-    </Box>
+    <>
+      <Box component="div" sx={{}} overflow="hidden">
+        DataSourceBlock
+        <Button
+          onClick={() => {
+            handleSetData("test1", data1, panelID);
+          }}
+        >
+          test1 data
+        </Button>
+        <Button
+          onClick={() => {
+            handleSetData("test2", data2, panelID);
+          }}
+        >
+          test2 data
+        </Button>
+      </Box>
+      <Box display="flex" alignItems="center">
+        <Button
+          disableRipple
+          disableFocusRipple
+          disableElevation
+          sx={{
+            color: "#5B9AFF",
+            backgroundColor: "#181B1F",
+            width: "10%",
+            marginRight: "1rem",
+            "&:hover": { backgroundColor: "#181B1F" },
+          }}
+          variant="contained"
+        >
+          URL
+        </Button>
+        <TextField
+          error={fetchErrorMsg ? true : false}
+          sx={{ backgroundColor: "#141414" }}
+          fullWidth
+          inputRef={textRef}
+          hiddenLabel
+          id="filled-hidden-label-small"
+          value={textValue}
+          variant="filled"
+          helperText={fetchErrorMsg ? `${fetchErrorMsg}` : ""}
+          size="small"
+          onChange={(e) => {
+            setTextValue(e.target.value);
+            const url = e.target.value;
+            handleSetURL("link", url, panelID);
+            fetchURl();
+          }}
+        />
+        <Button
+          variant="contained"
+          style={{ textTransform: "unset", width: "15%", marginLeft: "1rem" }}
+          onClick={() => setDrawerOpen(true)}
+        >
+          Query inspector
+        </Button>
+      </Box>
+      <InspectDrawer
+        panelID={panelID}
+        drawerOpen={drawerOpen}
+        setDrawerOpen={setDrawerOpen}
+      />
+    </>
   );
 };
 
 export default DataSourceBlock;
-
-// #141C30
-// black: {
-//   100: "#d0d2d6",
-//   200: "#a1a4ac",
-//   300: "#727783",
-//   400: "#434959",
-//   500: "#141c30",
-//   600: "#101626",
-//   700: "#0c111d",
-//   800: "#080b13",
-//   900: "#04060a"
-// },

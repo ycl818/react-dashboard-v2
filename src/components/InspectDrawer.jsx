@@ -21,7 +21,6 @@ import "ace-builds/src-noconflict/theme-monokai";
 import "ace-builds/src-noconflict/theme-twilight";
 
 import "ace-builds/src-noconflict/ext-language_tools";
-import zIndex from "@mui/material/styles/zIndex";
 
 const InspectDrawer = ({ panelID, setDrawerOpen, drawerOpen }) => {
   const [tabIndex, setTabIndex] = useState(0);
@@ -111,7 +110,7 @@ const InspectDrawer = ({ panelID, setDrawerOpen, drawerOpen }) => {
                       tree: ({ style }) => ({
                         style: {
                           ...style,
-                          backgroundColor: "#101626",
+                          backgroundColor: "#141414",
                           margin: 0,
                         }, // removing default background color from styles
                         className: "myTreeClassName",

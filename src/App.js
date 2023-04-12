@@ -6,6 +6,7 @@ import { useReducer } from "react";
 import { ChartContext, chartReducer, initChartState } from "./store/chartStore";
 
 import MyComponent from "./components/testComponents/MyComponent";
+import SettingsDrawer from "./pages/SettingsDrawer";
 
 function App() {
   const reducerChart = useReducer(chartReducer, initChartState);
@@ -27,6 +28,7 @@ function App() {
       >
         <Routes>
           <Route path="/" element={<Dashboard />}></Route>
+          <Route path="/settings" element={<SettingsDrawer />}></Route>
           <Route path="/test" element={<MyComponent />}></Route>
           <Route path="/:title/edit" element={<EditPage />}></Route>
           <Route path="/:title/view" element={<ViewPage />}></Route>
