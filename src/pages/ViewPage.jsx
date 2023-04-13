@@ -28,7 +28,7 @@ const ViewPage = () => {
   return (
     <Box style={{ height: "calc(100vh - 48px)" }}>
       {/* <Stack direction="row" spacing={2} justifyContent="space-between"> */}
-      <Sidebar />
+      {/* <Sidebar /> */}
       <Box
         sx={{
           width: "90%",

@@ -9,11 +9,13 @@ import {
 } from "./slice/dashboardSlice";
 import { widgetReducer } from "./slice/widgetSlice";
 import { widgetApi } from "./api/widgetApi";
+import { variableReducer } from "./slice/variableSlice";
 
 export const store = configureStore({
   reducer: {
     // dashboard: dashboardReducer,
     widget: widgetReducer,
+    variable: variableReducer,
     [widgetApi.reducerPath]: widgetApi.reducer,
   },
   middleware: (getDefaultMiddleware) => {
@@ -31,5 +33,6 @@ export {
   updateTimeRange,
 };
 
+export * from "./slice/variableSlice";
 export * from "./slice/widgetSlice";
 export { useFetchWidgetDataQuery } from "./api/widgetApi";

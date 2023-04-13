@@ -19,12 +19,11 @@ import FileUploadIcon from "@mui/icons-material/FileUpload";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addWidget, store, loadUploadData } from "../store";
-import SettingsDrawer from "../pages/SettingsDrawer";
+import SettingsDrawer from "../pages/SettingsPage";
 
 export default function ButtonAppBar() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  console.log("file: Navbar.jsx:27 ~ ButtonAppBar ~ pathname:", pathname);
   const dispatch = useDispatch();
 
   // const Icons = styled(Box)(({ theme }) => ({
@@ -102,6 +101,9 @@ export default function ButtonAppBar() {
     }
   };
 
+  const [editURL, setEditURL] = useState("");
+  console.log("file: Navbar.jsx:105 ~ ButtonAppBar ~ editURL:", editURL);
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="sticky" elevation={1}>
@@ -115,7 +117,12 @@ export default function ButtonAppBar() {
                 aria-label="menu"
                 sx={{ mr: 2 }}
                 onClick={() => {
-                  navigate(-1);
+                  if ([pathname.includes("settings")]) {
+                    navigate(editURL);
+                    setEditURL("");
+                  } else {
+                    navigate("/");
+                  }
                 }}
               >
                 <ArrowBackIcon />
@@ -207,6 +214,7 @@ export default function ButtonAppBar() {
           <Tooltip title="Settings">
             <IconButton
               onClick={() => {
+                setEditURL(pathname);
                 navigate("/settings");
               }}
             >

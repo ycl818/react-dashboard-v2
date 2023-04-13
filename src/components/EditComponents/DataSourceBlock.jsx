@@ -12,6 +12,7 @@ import "ace-builds/src-noconflict/ext-language_tools";
 import { useRef, useState } from "react";
 import axios from "axios";
 import InspectDrawer from "../InspectDrawer";
+import VariableAccordion from "./DataSourceComponent/VariableAccordion";
 
 const DataSourceBlock = ({ panelID }) => {
   const dispatch = useDispatch();
@@ -209,12 +210,23 @@ const DataSourceBlock = ({ panelID }) => {
         />
         <Button
           variant="contained"
-          style={{ textTransform: "unset", width: "15%", marginLeft: "1rem" }}
+          style={{
+            textTransform: "unset",
+
+            // width: "15%",
+            marginLeft: "1rem",
+          }}
+          sx={{
+            fontSize: { sm: "10px", lg: "14px" },
+            padding: { sm: "0", lg: "0.5rem" },
+            width: { sm: "5%", lg: "15%" },
+          }}
           onClick={() => setDrawerOpen(true)}
         >
           Query inspector
         </Button>
       </Box>
+      <VariableAccordion />
       <InspectDrawer
         panelID={panelID}
         drawerOpen={drawerOpen}
