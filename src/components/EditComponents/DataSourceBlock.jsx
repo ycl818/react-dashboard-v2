@@ -172,7 +172,6 @@ const DataSourceBlock = ({ panelID }) => {
   };
 
   const handleSetData = (datasourceName, data, panelID) => {
-    console.log(data);
     dispatch(updateData({ data, panelID }));
     dispatch(updateDataSource({ datasourceName, panelID }));
   };
@@ -248,7 +247,17 @@ const DataSourceBlock = ({ panelID }) => {
           Query inspector
         </Button>
       </Box>
-      {variablesArray.length ? <VariableAccordion fetchURl={fetchURl} /> : ""}
+      {variablesArray.length ? (
+        <VariableAccordion
+          fetchURl={fetchURl}
+          panelID={panelID}
+          setTextValue={setTextValue}
+          handleSetURL={handleSetURL}
+          textRef={textRef}
+        />
+      ) : (
+        ""
+      )}
 
       <InspectDrawer
         panelID={panelID}

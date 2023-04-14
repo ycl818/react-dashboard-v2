@@ -1,17 +1,8 @@
 import React, { useState } from "react";
 
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
-import {
-  Button,
-  Drawer,
-  Dialog,
-  Tab,
-  Tabs,
-  Box,
-  Typography,
-} from "@mui/material";
-import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
+import { Drawer, Tab, Tabs, Box } from "@mui/material";
 
 import AceEditor from "react-ace";
 import { JSONTree } from "react-json-tree";
@@ -37,7 +28,7 @@ const InspectDrawer = ({ panelID, setDrawerOpen, drawerOpen }) => {
     };
   });
 
-  const [editorData, setEditorData] = useState(dataDetail || []);
+  // const [editorData, setEditorData] = useState(dataDetail || []);
 
   return (
     <div>

@@ -1,6 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
 import {
-  dashboardReducer,
   addMetric,
   removeMetric,
   selectMetric,
@@ -13,7 +12,6 @@ import { variableReducer } from "./slice/variableSlice";
 
 export const store = configureStore({
   reducer: {
-    // dashboard: dashboardReducer,
     widget: widgetReducer,
     variable: variableReducer,
     [widgetApi.reducerPath]: widgetApi.reducer,

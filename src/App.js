@@ -7,7 +7,6 @@ import { ChartContext, chartReducer, initChartState } from "./store/chartStore";
 
 import MyComponent from "./components/testComponents/MyComponent";
 import SettingsPage from "./pages/SettingsPage";
-import ContentBox from "./components/SettingsComponents/ContentBox";
 import SettingGeneral from "./components/SettingsComponents/SettingGeneral";
 import SettingVariables from "./components/SettingsComponents/SettingVariables";
 

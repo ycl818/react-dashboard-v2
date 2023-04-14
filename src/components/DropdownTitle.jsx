@@ -4,13 +4,12 @@ import * as React from "react";
 // import MenuItem from "@mui/material/MenuItem";
 // import Fade from "@mui/material/Fade";
 import { Link } from "react-router-dom";
-import { style } from "@mui/system";
+
 import { Typography, Fade, MenuItem, Menu, Button } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import AutoFixHighSharpIcon from "@mui/icons-material/AutoFixHighSharp";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import InfoIcon from "@mui/icons-material/Info";
-import { useSelector } from "react-redux";
 import InspectDrawer from "./InspectDrawer";
 import { useState } from "react";
 
@@ -23,14 +22,6 @@ const DropdownTitle = ({ title, panelID }) => {
   const handleClose = () => {
     setAnchorEl(null);
   };
-
-  const { dataDetail } = useSelector((state) => {
-    const panelArray = state.widget.widgetArray;
-    const targetPanel = panelArray.filter((panel) => panel.i === panelID);
-    return {
-      dataDetail: targetPanel[0]?.data?.dataDetail,
-    };
-  });
 
   const [drawerOpen, setDrawerOpen] = useState(false);
 

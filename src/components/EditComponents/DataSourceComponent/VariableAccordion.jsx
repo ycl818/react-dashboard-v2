@@ -9,15 +9,27 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { adjustVariable } from "../../../store";
+import { adjustVariable, pasteVariableIntoDataSourceURL } from "../../../store";
 
-const VariableAccordion = ({ fetchURl }) => {
+const VariableAccordion = ({
+  fetchURl,
+  panelID,
+  setTextValue,
+  handleSetURL,
+  textRef,
+}) => {
   const dispatch = useDispatch();
   let variablesArray = useSelector((state) => {
     return state.variable.variableArray;
   });
 
-  console.log(variablesArray);
+  const { datasource_url } = useSelector((state) => {
+    const panelArray = state.widget.widgetArray;
+    const targetPanel = panelArray.filter((panel) => panel.i === panelID);
+    return {
+      datasource_url: targetPanel[0]?.data?.datasource_url,
+    };
+  });
 
   const [inputs, setInputs] = useState(variablesArray);
 
@@ -30,6 +42,17 @@ const VariableAccordion = ({ fetchURl }) => {
     setInputs(updatedVariablesArray);
 
     console.log(inputs);
+  };
+
+  const handlePasteVariable = (e) => {
+    console.log(e.target.value);
+    const newDataSouceUrl = datasource_url + `/$${e.target.value}`;
+    setTextValue(newDataSouceUrl);
+    handleSetURL("link", newDataSouceUrl, panelID);
+
+    console.log("I pasted varibale~~~~~", inputs);
+    console.log("ref value~~~~~~~~", textRef.current.value);
+    fetchURl(inputs);
   };
 
   return (
@@ -45,6 +68,8 @@ const VariableAccordion = ({ fetchURl }) => {
             return (
               <Box sx={{ marginLeft: "1rem" }} key={variable.id}>
                 <Button
+                  value={variable.variableName}
+                  onClick={handlePasteVariable}
                   disableRipple
                   disableFocusRipple
                   disableElevation
@@ -75,7 +100,6 @@ const VariableAccordion = ({ fetchURl }) => {
                   onBlur={() => {
                     dispatch(adjustVariable({ inputs }));
                     fetchURl(inputs);
-                    console.log("calll~~~~~~~~~~");
                   }}
                 />
               </Box>

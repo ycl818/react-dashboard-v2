@@ -19,7 +19,6 @@ import FileUploadIcon from "@mui/icons-material/FileUpload";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addWidget, store, loadUploadData, loadUploadVariable } from "../store";
-import SettingsDrawer from "../pages/SettingsPage";
 
 export default function ButtonAppBar() {
   const navigate = useNavigate();

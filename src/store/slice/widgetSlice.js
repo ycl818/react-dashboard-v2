@@ -22,12 +22,20 @@ const widgetSlice = createSlice({
       ] || [],
   },
   reducers: {
+    pasteVariableIntoDataSourceURL: (state, action) => {
+      console.log("file: widgetSlice.js:129 ~ action:", action.payload);
+      const panelIndex = state.widgetArray.findIndex(
+        (panel) => panel.i === action.payload.panelID
+      );
+      state.widgetArray[panelIndex].data.datasource_url =
+        action.payload.newDataSouceUrl;
+    },
     fetchExistDashboard: (state, action) => {
       console.log(action.payload.data);
       state.widgetArray = action.payload.panelArray;
     },
     updateDataSourceWithURL: (state, action) => {
-      console.log(action.payload);
+      console.log("update URL~~~~~~~~~~", action.payload);
       const panelIndex = state.widgetArray.findIndex(
         (panel) => panel.i === action.payload.panelID
       );
@@ -131,5 +139,6 @@ export const {
   updatePanelName,
   updateDataSourceWithURL,
   fetchExistDashboard,
+  pasteVariableIntoDataSourceURL,
 } = widgetSlice.actions;
 export const widgetReducer = widgetSlice.reducer;

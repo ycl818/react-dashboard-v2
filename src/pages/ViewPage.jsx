@@ -1,8 +1,4 @@
-import { Box, Stack } from "@mui/material";
-import Sidebar from "../components/EditComponents/Sidebar";
-import React from "react";
-import Leftbar from "../components/EditComponents/Leftbar";
-import Rightbar from "../components/EditComponents/Rightbar";
+import { Box } from "@mui/material";
 import GraphTypeSwitcher from "../components/GraphTypeSwitcher";
 import { useSelector } from "react-redux";
 
@@ -48,8 +44,6 @@ const ViewPage = () => {
           XaxisName={dataDetail ? keys[0] : "No Data"}
         />
       </Box>
-
-      {/* </Stack> */}
     </Box>
   );
 };

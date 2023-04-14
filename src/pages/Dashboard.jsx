@@ -1,18 +1,18 @@
 import { Box } from "@mui/material";
-import { useEffect } from "react";
+//import { useEffect } from "react";
 import GridLayout from "../components/GridLayout";
 
-import { useDispatch } from "react-redux";
-import {
-  fetchExistDashboard,
-  fetchExistDashboardVariable,
-  useFetchWidgetDataQuery,
-} from "../store";
+// import { useDispatch } from "react-redux";
+// import {
+//   fetchExistDashboard,
+//   fetchExistDashboardVariable,
+//   useFetchWidgetDataQuery,
+// } from "../store";
 
 const Dashboard = () => {
-  const dispatch = useDispatch();
-  const { data, error, isFetching } = useFetchWidgetDataQuery();
-  console.log(data);
+  // const dispatch = useDispatch();
+  // const { data } = useFetchWidgetDataQuery();
+  // console.log(data);
   // const panelArray = data?.widget?.widgetArray;
   // const variableArray = data?.variable?.variableArray;
 
@@ -20,7 +20,7 @@ const Dashboard = () => {
   //   data &&
   //     dispatch(fetchExistDashboard({ panelArray })) &&
   //     dispatch(fetchExistDashboardVariable({ variableArray }));
-  // }, [data]);
+  // }, [data, panelArray, variableArray, dispatch]);
   return (
     <Box height="100%">
       <GridLayout />

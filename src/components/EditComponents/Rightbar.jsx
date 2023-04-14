@@ -1,6 +1,5 @@
-import { Box, styled as muiStyled } from "@mui/material";
-import React, { useRef } from "react";
-import { useResize } from "../../hooks/useResize";
+import { Box } from "@mui/material";
+
 import ComboBox from "./ComboBox";
 // import styled from 'styled-components'
 
