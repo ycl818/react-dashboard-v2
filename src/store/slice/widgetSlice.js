@@ -24,7 +24,7 @@ const widgetSlice = createSlice({
   reducers: {
     fetchExistDashboard: (state, action) => {
       console.log(action.payload.data);
-      state.widgetArray = action.payload.data;
+      state.widgetArray = action.payload.panelArray;
     },
     updateDataSourceWithURL: (state, action) => {
       console.log(action.payload);
@@ -44,8 +44,8 @@ const widgetSlice = createSlice({
       state.widgetArray[panelIndex].panelName = action.payload.name;
     },
     loadUploadData: (state, action) => {
-      console.log(action.payload.fileData);
-      state.widgetArray = action.payload.fileData;
+      console.log(action.payload.widgetArray);
+      state.widgetArray = action.payload.widgetArray;
     },
     updateDataType: (state, action) => {
       console.log(action);
@@ -90,7 +90,7 @@ const widgetSlice = createSlice({
       state.widgetArray = tempArray;
     },
     addWidget: (state) => {
-      const panelNumber = state.widgetArray.length;
+      const panelNumber = state.widgetArray?.length;
       state.widgetArray = [
         ...state.widgetArray,
         {

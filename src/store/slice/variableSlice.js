@@ -6,6 +6,13 @@ const variableSlice = createSlice({
     variableArray: [],
   },
   reducers: {
+    loadUploadVariable: (state, action) => {
+      state.variableArray = action.payload.variableArray;
+    },
+    fetchExistDashboardVariable: (state, action) => {
+      console.log(action.payload.data);
+      state.variableArray = action.payload.variableArray;
+    },
     addVariable: (state, action) => {
       console.log(action.payload);
       state.variableArray.push({
@@ -14,8 +21,24 @@ const variableSlice = createSlice({
         id: nanoid(),
       });
     },
+    adjustVariable: (state, action) => {
+      state.variableArray = action.payload.inputs;
+    },
+    updateTargetVariable: (state, action) => {
+      const variableArrayIndex = state.variableArray.findIndex(
+        (array) => array?.variableName === action.payload.newRow.variableName
+      );
+      state.variableArray[variableArrayIndex].defaultValue =
+        action.payload.newRow.defaultValue;
+    },
   },
 });
 
-export const { addVariable } = variableSlice.actions;
+export const {
+  addVariable,
+  adjustVariable,
+  updateTargetVariable,
+  fetchExistDashboardVariable,
+  loadUploadVariable,
+} = variableSlice.actions;
 export const variableReducer = variableSlice.reducer;

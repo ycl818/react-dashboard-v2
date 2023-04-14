@@ -18,7 +18,7 @@ import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { addWidget, store, loadUploadData } from "../store";
+import { addWidget, store, loadUploadData, loadUploadVariable } from "../store";
 import SettingsDrawer from "../pages/SettingsPage";
 
 export default function ButtonAppBar() {
@@ -35,8 +35,8 @@ export default function ButtonAppBar() {
   };
 
   const handleDownloadPanel = () => {
-    const data = store.getState().widget.widgetArray;
-
+    const data = store.getState();
+    console.log("yooooooooooooooo~", store.getState());
     // file name time
     let currentYear = new Date().getFullYear().toString();
     let currentMonth = (new Date().getMonth() + 1).toString();
@@ -94,7 +94,12 @@ export default function ButtonAppBar() {
     fileReader.onload = (e) => {
       console.log("e.target.result", e.target.result);
       const fileData = JSON.parse(e.target.result);
-      dispatch(loadUploadData({ fileData }));
+      const widgetArray = fileData?.widget?.widgetArray;
+      const variableArray = fileData?.variable?.variableArray;
+      console.log(fileData);
+
+      dispatch(loadUploadData({ widgetArray }));
+      dispatch(loadUploadVariable({ variableArray }));
     };
     if (fileReader.readyState === 2) {
       fileReader.abort();

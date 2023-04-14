@@ -29,9 +29,31 @@ const DataSourceBlock = ({ panelID }) => {
   });
   const [textValue, setTextValue] = useState(datasource_url || "");
 
-  const fetchURl = async () => {
+  let variablesArray = useSelector((state) => {
+    return state.variable.variableArray;
+  });
+
+  const fetchURl = async (variablesArray) => {
     try {
-      const response = await axios.get(`${textRef.current.value}`);
+      console.log("HIIIII", textRef.current.value);
+      // Define default values for each variable
+      let defaultValues = {};
+
+      variablesArray.forEach(({ variableName, defaultValue }) => {
+        defaultValues[variableName] = defaultValue;
+      });
+      console.log("before Regex vARRAY: ", variablesArray);
+      const regex = /\$(\w+)/g;
+      let match;
+      let currentText = `${textRef.current.value}`;
+      console.log("before regex:", currentText);
+      while ((match = regex.exec(currentText)) !== null) {
+        const variableName = match[1];
+        const variableValue = defaultValues[variableName] || "";
+        currentText = currentText.replace(`$${variableName}`, variableValue);
+      }
+      console.log("after regex:", currentText);
+      const response = await axios.get(currentText);
       const data = response.data;
       dispatch(updateData({ data, panelID }));
       setFetchErrorMsg("");
@@ -205,7 +227,7 @@ const DataSourceBlock = ({ panelID }) => {
             setTextValue(e.target.value);
             const url = e.target.value;
             handleSetURL("link", url, panelID);
-            fetchURl();
+            fetchURl(variablesArray);
           }}
         />
         <Button
@@ -226,7 +248,8 @@ const DataSourceBlock = ({ panelID }) => {
           Query inspector
         </Button>
       </Box>
-      <VariableAccordion />
+      {variablesArray.length ? <VariableAccordion fetchURl={fetchURl} /> : ""}
+
       <InspectDrawer
         panelID={panelID}
         drawerOpen={drawerOpen}

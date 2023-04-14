@@ -2,10 +2,11 @@ import { Box, Button, Divider, Typography } from "@mui/material";
 import React, { useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import Dialoag from "./Dialoag";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { updateTargetVariable } from "../../store";
 
 const columns = [
-  { field: "id", headerName: "ID", width: 90 },
+  //{ field: "id", headerName: "ID", width: 200, hidden: true, editable: true },
   {
     field: "variableName",
     headerName: "Variable",
@@ -34,6 +35,16 @@ const SettingVariables = () => {
   const rows = useSelector((state) => {
     return state.variable.variableArray;
   });
+
+  const dispatch = useDispatch();
+
+  const handleProcessRowUpdate = (newRow, oldRow) => {
+    dispatch(updateTargetVariable({ newRow }));
+    console.log(
+      "file: SettingVariables.jsx:55 ~ handleProcessRowUpdate ~ newRow:",
+      newRow
+    );
+  };
 
   return (
     <Box bgcolor="#181B1F" className="fullHeightBox">
@@ -73,6 +84,8 @@ const SettingVariables = () => {
           pageSizeOptions={[5]}
           //checkboxSelection
           disableRowSelectionOnClick
+          processRowUpdate={handleProcessRowUpdate}
+          onProcessRowUpdateError={(error) => console.log(error)}
         />
       </Box>
 
