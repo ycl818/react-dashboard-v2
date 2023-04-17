@@ -1,6 +1,7 @@
 import { Box } from "@mui/material";
 //import { useEffect } from "react";
 import GridLayout from "../components/GridLayout";
+import VariablesBlock from "../components/VariablesBlock";
 
 // import { useDispatch } from "react-redux";
 // import {
@@ -23,6 +24,7 @@ const Dashboard = () => {
   // }, [data, panelArray, variableArray, dispatch]);
   return (
     <Box height="100%">
+      <VariablesBlock />
       <GridLayout />
     </Box>
   );

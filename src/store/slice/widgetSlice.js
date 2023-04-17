@@ -18,10 +18,26 @@ const widgetSlice = createSlice({
             dataType: null,
             dataDetail: null,
           },
+          fetchError: false,
         },
       ] || [],
   },
   reducers: {
+    fetchErrorShowBorder: (state, action) => {
+      console.log(action);
+      const panelIndex = state.widgetArray.findIndex(
+        (panel) => panel.i === action.payload.id
+      );
+      state.widgetArray[panelIndex].fetchError = action.payload.res;
+    },
+    updateDataByURL: (state, action) => {
+      console.log(action.payload);
+
+      const panelIndex = state.widgetArray.findIndex(
+        (panel) => panel.i === action.payload.id
+      );
+      state.widgetArray[panelIndex].data.dataDetail = action.payload.result;
+    },
     pasteVariableIntoDataSourceURL: (state, action) => {
       console.log("file: widgetSlice.js:129 ~ action:", action.payload);
       const panelIndex = state.widgetArray.findIndex(
@@ -35,7 +51,7 @@ const widgetSlice = createSlice({
       state.widgetArray = action.payload.panelArray;
     },
     updateDataSourceWithURL: (state, action) => {
-      console.log("update URL~~~~~~~~~~", action.payload);
+      //console.log("update URL~~~~~~~~~~", action.payload);
       const panelIndex = state.widgetArray.findIndex(
         (panel) => panel.i === action.payload.panelID
       );
@@ -52,11 +68,11 @@ const widgetSlice = createSlice({
       state.widgetArray[panelIndex].panelName = action.payload.name;
     },
     loadUploadData: (state, action) => {
-      console.log(action.payload.widgetArray);
+      //console.log(action.payload.widgetArray);
       state.widgetArray = action.payload.widgetArray;
     },
     updateDataType: (state, action) => {
-      console.log(action);
+      //console.log(action);
       const panelIndex = state.widgetArray.findIndex(
         (panel) => panel.i === action.payload.panelID
       );
@@ -82,8 +98,8 @@ const widgetSlice = createSlice({
       //   data: { ...widget.data },
       // }));
       const tempArray = [...state.widgetArray];
-      console.log("temp:", tempArray);
-      console.log(action);
+      // console.log("temp:", tempArray);
+      //console.log(action);
       action.payload.layouts?.forEach((position) => {
         const widgetIndex = tempArray.findIndex(
           (widget) => widget.i === position.i
@@ -114,6 +130,7 @@ const widgetSlice = createSlice({
             dataType: null,
             dataDetail: null,
           },
+          fetchError: false,
         },
       ];
     },
@@ -140,5 +157,7 @@ export const {
   updateDataSourceWithURL,
   fetchExistDashboard,
   pasteVariableIntoDataSourceURL,
+  updateDataByURL,
+  fetchErrorShowBorder,
 } = widgetSlice.actions;
 export const widgetReducer = widgetSlice.reducer;

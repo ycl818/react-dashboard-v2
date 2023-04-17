@@ -16,19 +16,26 @@ const GridLayout = () => {
   );
 
   const dispatch = useDispatch();
+  // const isFetchErrorArray = useSelector((state) =>
+  //   state.widget.widgetArray.map((panel) => panel.fetchError)
+  // );
+  // console.log(
+  //   "file: GridLayout.jsx:23 ~ GridLayout ~ isFetchErrorArray:",
+  //   isFetchErrorArray
+  // );
   const widgetA = useSelector((state) => state.widget.widgetArray);
   //const layouts = useSelector((state) => state.widget.widgetArray);
-  console.log(widgetA);
+  //console.log(widgetA);
   //console.log(widgetA[0].data.dataDetail);
   //const saveLayout = localStorage.getItem("grid-layout");
   //const layoutSave = saveLayout ? JSON.parse(saveLayout) : widgetA;
   const layoutSave = useMemo(() => widgetA, [widgetA]);
-  console.log("layoutSave: ", layoutSave);
+  //console.log("layoutSave: ", layoutSave);
 
   const [layout, setLayout] = useState(layoutSave);
 
   const handleModify = (newLayout) => {
-    console.log("layouts: ~~", newLayout);
+    //console.log("layouts: ~~", newLayout);
 
     if (layout !== newLayout) {
       setLayout(newLayout);
@@ -46,6 +53,7 @@ const GridLayout = () => {
       {/* <Button variant="contained" onClick={() => handleAdd()}>
         Add Widget
       </Button> */}
+
       <ResponsiveReactGridLayout
         style={{ display: "flex" }}
         onLayoutChange={handleModify}
@@ -64,16 +72,20 @@ const GridLayout = () => {
         }}
       >
         {widgetA?.map((widget, index) => {
-          console.log(widget.data);
+          // console.log(widget.data);
           let keysArry = [];
           if (widget.data?.dataDetail) {
             keysArry = Object.keys(widget.data.dataDetail[0]);
-            console.log(keysArry);
+            //console.log(keysArry);
           }
           return (
             <Box
               component="div"
-              className="reactGridItem"
+              className={
+                widget.fetchError
+                  ? "isFetchError reactGridItem"
+                  : "reactGridItem"
+              }
               key={widget.i}
               data-grid={{
                 x: widget?.x,

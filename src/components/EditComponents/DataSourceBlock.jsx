@@ -1,6 +1,7 @@
 import { Box, Button, TextField } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  fetchErrorShowBorder,
   updateData,
   updateDataSource,
   updateDataSourceWithURL,
@@ -58,9 +59,15 @@ const DataSourceBlock = ({ panelID }) => {
       const response = await axios.get(currentText);
       const data = response.data;
       dispatch(updateData({ data, panelID }));
+      const res = false;
+      const id = panelID;
+      dispatch(fetchErrorShowBorder({ id, res }));
       setFetchErrorMsg("");
     } catch (error) {
+      const res = true;
+      const id = panelID;
       setFetchErrorMsg(error.message);
+      dispatch(fetchErrorShowBorder({ id, res }));
     }
   };
 

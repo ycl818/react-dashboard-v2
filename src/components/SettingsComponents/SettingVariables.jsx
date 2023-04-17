@@ -3,7 +3,12 @@ import React, { useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import Dialoag from "./Dialoag";
 import { useDispatch, useSelector } from "react-redux";
-import { updateTargetVariable } from "../../store";
+import {
+  fetchErrorShowBorder,
+  updateDataByURL,
+  updateTargetVariable,
+} from "../../store";
+import axios from "axios";
 
 const columns = [
   //{ field: "id", headerName: "ID", width: 200, hidden: true, editable: true },
@@ -15,7 +20,7 @@ const columns = [
   },
   {
     field: "defaultValue",
-    headerName: "Definition",
+    headerName: "Default Value",
     width: 150,
     editable: true,
   },
@@ -36,6 +41,16 @@ const SettingVariables = () => {
     return state.variable.variableArray;
   });
 
+  const { panelURLs } = useSelector((state) => {
+    const panelURLs = state.widget.widgetArray.map((panel) => {
+      return { id: panel.i, url: panel.data.datasource_url };
+    });
+
+    return {
+      panelURLs,
+    };
+  });
+
   const dispatch = useDispatch();
 
   const handleProcessRowUpdate = (newRow, oldRow) => {
@@ -44,6 +59,59 @@ const SettingVariables = () => {
       "file: SettingVariables.jsx:55 ~ handleProcessRowUpdate ~ newRow:",
       newRow
     );
+
+    const targetURLs = panelURLs.filter((panel) =>
+      panel.url.includes(newRow.variableName)
+    );
+
+    console.log(
+      "file: SettingVariables.jsx:61 ~ handleProcessRowUpdate ~ targetURLs:",
+      targetURLs
+    );
+    const newTargetURLs = targetURLs?.map((panel) => {
+      let panelURL = panel.url;
+      if (panelURL.includes(newRow.variableName)) {
+        panelURL = panelURL.replace(
+          new RegExp(`\\$${newRow.variableName}`, "g"),
+          newRow.defaultValue
+        );
+      }
+      return { id: panel.id, url: panelURL };
+    });
+    console.log(
+      "file: SettingVariables.jsx:75 ~ newTargetURLs ~ newTargetURLs:",
+      newTargetURLs
+    );
+
+    // Step 2: Send all URLs at the same time using Promise.all()
+    Promise.all(
+      newTargetURLs.map(async (panel) => {
+        try {
+          const response = await axios.get(panel.url);
+          const id = panel.id;
+          let result = response?.data;
+          const res = false;
+          // find url is in which panel then update
+          dispatch(updateDataByURL({ result, id }));
+          dispatch(fetchErrorShowBorder({ res, id }));
+        } catch (error) {
+          const id = panel.id;
+          const res = true;
+          dispatch(fetchErrorShowBorder({ res, id }));
+          console.log(
+            "file: variablesArea.jsx:65 ~ newPanelsURL.map ~ error:",
+            error
+          );
+        }
+      })
+    )
+      .then((responses) => {
+        console.log(responses);
+        // Do something with the array of response data
+      })
+      .catch((error) => {
+        console.error(error);
+      });
 
     // after modified variable, need to fetch urL again in every panel. So need to map over all panel's url and check which variables are in using.
   };
@@ -79,11 +147,11 @@ const SettingVariables = () => {
           initialState={{
             pagination: {
               paginationModel: {
-                pageSize: 5,
+                pageSize: 10,
               },
             },
           }}
-          pageSizeOptions={[5]}
+          pageSizeOptions={[10]}
           //checkboxSelection
           disableRowSelectionOnClick
           processRowUpdate={handleProcessRowUpdate}
