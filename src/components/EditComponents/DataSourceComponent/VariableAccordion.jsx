@@ -41,7 +41,7 @@ const VariableAccordion = ({
     });
     setInputs(updatedVariablesArray);
 
-    console.log(inputs);
+    fetchURl(updatedVariablesArray, textRef.current.value);
   };
 
   const handlePasteVariable = (e) => {
@@ -52,7 +52,8 @@ const VariableAccordion = ({
 
     console.log("I pasted varibale~~~~~", inputs);
     console.log("ref value~~~~~~~~", textRef.current.value);
-    fetchURl(inputs);
+    let cuurentText = textRef.current.value + `/$${e.target.value}`;
+    fetchURl(inputs, cuurentText);
   };
 
   return (
@@ -66,7 +67,10 @@ const VariableAccordion = ({
         >
           {variablesArray.map((variable) => {
             return (
-              <Box sx={{ marginLeft: "1rem" }} key={variable.id}>
+              <Box
+                sx={{ marginLeft: "1rem", marginTop: "1rem" }}
+                key={variable.id}
+              >
                 <Button
                   value={variable.variableName}
                   onClick={handlePasteVariable}
@@ -99,7 +103,6 @@ const VariableAccordion = ({
                   onChange={handleChange}
                   onBlur={() => {
                     dispatch(adjustVariable({ inputs }));
-                    fetchURl(inputs);
                   }}
                 />
               </Box>

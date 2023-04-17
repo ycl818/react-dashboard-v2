@@ -33,7 +33,7 @@ const DataSourceBlock = ({ panelID }) => {
     return state.variable.variableArray;
   });
 
-  const fetchURl = async (variablesArray) => {
+  const fetchURl = async (variablesArray, currentText) => {
     try {
       console.log("HIIIII", textRef.current.value);
       // Define default values for each variable
@@ -42,16 +42,18 @@ const DataSourceBlock = ({ panelID }) => {
       variablesArray.forEach(({ variableName, defaultValue }) => {
         defaultValues[variableName] = defaultValue;
       });
-      console.log("before Regex vARRAY: ", variablesArray);
-      const regex = /\$(\w+)/g;
-      let match;
-      let currentText = `${textRef.current.value}`;
+      console.log(
+        "🚀 ~ file: DataSourceBlock.jsx:41 ~ fetchURl ~ defaultValues:",
+        defaultValues
+      );
+      console.log("before Regex ARRAY: ", variablesArray);
+
       console.log("before regex:", currentText);
-      while ((match = regex.exec(currentText)) !== null) {
-        const variableName = match[1];
+
+      currentText = currentText.replace(/\$(\w+)/g, (match, variableName) => {
         const variableValue = defaultValues[variableName] || "";
-        currentText = currentText.replace(`$${variableName}`, variableValue);
-      }
+        return variableValue;
+      });
       console.log("after regex:", currentText);
       const response = await axios.get(currentText);
       const data = response.data;
@@ -226,7 +228,7 @@ const DataSourceBlock = ({ panelID }) => {
             setTextValue(e.target.value);
             const url = e.target.value;
             handleSetURL("link", url, panelID);
-            fetchURl(variablesArray);
+            fetchURl(variablesArray, textRef.current.value);
           }}
         />
         <Button

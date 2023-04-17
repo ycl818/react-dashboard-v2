@@ -164,8 +164,8 @@ export default function ButtonAppBar() {
 
           {pathname === "/" ? (
             <Tooltip title="Download Panel">
-              <IconButton>
-                <FileDownloadIcon onClick={handleDownloadPanel} />
+              <IconButton onClick={handleDownloadPanel}>
+                <FileDownloadIcon />
               </IconButton>
             </Tooltip>
           ) : (

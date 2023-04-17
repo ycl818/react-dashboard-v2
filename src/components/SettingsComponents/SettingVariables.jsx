@@ -44,6 +44,8 @@ const SettingVariables = () => {
       "file: SettingVariables.jsx:55 ~ handleProcessRowUpdate ~ newRow:",
       newRow
     );
+
+    // after modified variable, need to fetch urL again in every panel. So need to map over all panel's url and check which variables are in using.
   };
 
   return (
