@@ -47,7 +47,7 @@ const Leftbar = ({ panelID }) => {
           <Pane maxSize="80%">
             <GraphBolck panelID={panelID} />
           </Pane>
-          <Pane>
+          <Pane style={{ overflowY: "auto", scrollPadding: "20px" }}>
             <DataSourceBlock panelID={panelID} />
           </Pane>
         </SplitPane>

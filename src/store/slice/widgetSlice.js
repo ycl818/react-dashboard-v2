@@ -10,7 +10,7 @@ const widgetSlice = createSlice({
           x: 0,
           y: 0,
           w: 4,
-          h: 1.5,
+          h: 2,
           panelName: "",
           data: {
             datasource: null,
@@ -19,6 +19,7 @@ const widgetSlice = createSlice({
             dataDetail: null,
           },
           fetchError: false,
+          fetchErrorMessage: "",
         },
       ] || [],
   },
@@ -29,6 +30,7 @@ const widgetSlice = createSlice({
         (panel) => panel.i === action.payload.id
       );
       state.widgetArray[panelIndex].fetchError = action.payload.res;
+      state.widgetArray[panelIndex].fetchErrorMessage = action.payload.message;
     },
     updateDataByURL: (state, action) => {
       console.log(action.payload);
@@ -78,13 +80,6 @@ const widgetSlice = createSlice({
       );
       state.widgetArray[panelIndex].data.dataType = action.payload.selectedType;
     },
-    updateDataSource: (state, action) => {
-      const panelIndex = state.widgetArray.findIndex(
-        (panel) => panel.i === action.payload.panelID
-      );
-      state.widgetArray[panelIndex].data.datasource =
-        action.payload.datasourceName;
-    },
     updateData: (state, action) => {
       console.log(action);
       const panelIndex = state.widgetArray.findIndex(
@@ -122,7 +117,7 @@ const widgetSlice = createSlice({
           x: 0,
           y: -1.5 * panelNumber,
           w: 4,
-          h: 1.5,
+          h: 2,
           panelName: "",
           data: {
             datasource: null,
@@ -131,15 +126,16 @@ const widgetSlice = createSlice({
             dataDetail: null,
           },
           fetchError: false,
+          fetchErrorMessage: "",
         },
       ];
     },
     deleteWidget: (state, action) => {
-      const tempArray = state.widgetArray.slice();
-      const index = tempArray.indexOf(
-        tempArray.find((data) => data.i === action.payload)
+      const panelIndex = state.widgetArray.findIndex(
+        (panel) => panel.i === action.payload.id
       );
-      tempArray.splice(index, 1);
+      const tempArray = [...state.widgetArray];
+      tempArray.splice(panelIndex, 1);
       state.widgetArray = tempArray;
     },
   },
@@ -150,7 +146,7 @@ export const {
   addWidget,
   deleteWidget,
   updateData,
-  updateDataSource,
+
   updateDataType,
   loadUploadData,
   updatePanelName,

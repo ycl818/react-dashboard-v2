@@ -1,5 +1,5 @@
 import { Box, Button, TextField } from "@mui/material";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   adjustVariable,
@@ -20,15 +20,8 @@ const VariablesBlock = () => {
     const panelURLs = state.widget.widgetArray.map((panel) => {
       return { id: panel.i, url: panel.data.datasource_url };
     });
-
-    return {
-      panelURLs,
-    };
+    return { panelURLs };
   });
-  console.log(
-    "file: variablesArea.jsx:22 ~ const{panelURLs}=useSelector ~ panelURLs:",
-    panelURLs
-  );
 
   const handleChange = (e) => {
     let updatedVariablesArray = variablesArray.map((variable) => {
@@ -39,12 +32,17 @@ const VariablesBlock = () => {
     setInputs(updatedVariablesArray);
   };
 
-  const handleOnBlur = () => {
+  const handleOnBlur = (e) => {
     dispatch(adjustVariable({ inputs }));
     /*
       step 1: check panels which contains modified variables
     */
-    const newPanelsURL = panelURLs?.map((panel) => {
+
+    const filteredURLs = panelURLs.filter((panel) =>
+      panel.url.includes(e.target.name)
+    );
+
+    const newPanelsURL = filteredURLs?.map((panel) => {
       let newUrl = panel.url;
       inputs.forEach((variable) => {
         if (newUrl.includes(`$${variable.variableName}`)) {
@@ -64,13 +62,15 @@ const VariablesBlock = () => {
           const id = panel.id;
           let result = response?.data;
           const res = false;
+          const message = "";
           // find url is in which panel then update
           dispatch(updateDataByURL({ result, id }));
-          dispatch(fetchErrorShowBorder({ res, id }));
+          dispatch(fetchErrorShowBorder({ res, id, message }));
         } catch (error) {
           const id = panel.id;
           const res = true;
-          dispatch(fetchErrorShowBorder({ res, id }));
+          const message = error.message;
+          dispatch(fetchErrorShowBorder({ res, id, message }));
           console.log(
             "file: variablesArea.jsx:65 ~ newPanelsURL.map ~ error:",
             error
@@ -80,7 +80,6 @@ const VariablesBlock = () => {
     )
       .then((responses) => {
         console.log(responses);
-        // Do something with the array of response data
       })
       .catch((error) => {
         console.error(error);
@@ -105,7 +104,6 @@ const VariablesBlock = () => {
                 backgroundColor: "#181B1F",
                 width: "10%",
                 textTransform: "none",
-
                 "&:hover": { backgroundColor: "#181B1F", cursor: "auto" },
               }}
               variant="contained"

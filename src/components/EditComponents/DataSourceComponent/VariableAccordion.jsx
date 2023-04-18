@@ -9,7 +9,12 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { adjustVariable, pasteVariableIntoDataSourceURL } from "../../../store";
+import {
+  adjustVariable,
+  fetchErrorShowBorder,
+  updateDataByURL,
+} from "../../../store";
+import axios from "axios";
 
 const VariableAccordion = ({
   fetchURl,
@@ -23,11 +28,15 @@ const VariableAccordion = ({
     return state.variable.variableArray;
   });
 
-  const { datasource_url } = useSelector((state) => {
+  const { datasource_url, allPanelURLs } = useSelector((state) => {
     const panelArray = state.widget.widgetArray;
+    const allPanelURLs = panelArray.map((panel) => {
+      return { id: panel.i, url: panel.data.datasource_url };
+    });
     const targetPanel = panelArray.filter((panel) => panel.i === panelID);
     return {
       datasource_url: targetPanel[0]?.data?.datasource_url,
+      allPanelURLs,
     };
   });
 
@@ -41,17 +50,68 @@ const VariableAccordion = ({
     });
     setInputs(updatedVariablesArray);
 
-    fetchURl(updatedVariablesArray, textRef.current.value);
+    //fetchURl(updatedVariablesArray, textRef.current.value);
+  };
+
+  const handleOnBlur = (e) => {
+    dispatch(adjustVariable({ inputs }));
+    console.log("file: VariableAccordion.jsx:51 ~ handleOnBlur ~ e:", e);
+
+    // 1. get all panels url
+    // 2. check the urls which contain target variable
+    // 3. fectch all target url
+    const filteredURLs = allPanelURLs.filter((panel) =>
+      panel.url.includes(e.target.name)
+    );
+
+    const newPanelsURL = filteredURLs?.map((panel) => {
+      let newUrl = panel.url;
+      inputs.forEach((variable) => {
+        if (newUrl.includes(`$${variable.variableName}`)) {
+          newUrl = newUrl.replace(
+            new RegExp(`\\$${variable.variableName}`, "g"),
+            variable.defaultValue
+          );
+        }
+      });
+      return { id: panel.id, url: newUrl };
+    });
+
+    Promise.all(
+      newPanelsURL.map(async (panel) => {
+        try {
+          const response = await axios.get(panel.url);
+          const id = panel.id;
+          const result = response.data;
+          const res = false;
+          const message = "";
+          dispatch(updateDataByURL({ result, id }));
+          dispatch(fetchErrorShowBorder({ res, id, message }));
+        } catch (error) {
+          const id = panel.id;
+          const res = true;
+          const message = error.message;
+
+          console.log(
+            "file: VariableAccordion.jsx:84 ~ filteredURLs.map ~ panel.url:",
+            panel.url
+          );
+          dispatch(fetchErrorShowBorder({ res, id, message }));
+        }
+      })
+    )
+      .then((responses) => {
+        console.log(responses);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
 
   const handlePasteVariable = (e) => {
-    console.log(e.target.value);
     const newDataSouceUrl = datasource_url + `/$${e.target.value}`;
     setTextValue(newDataSouceUrl);
     handleSetURL("link", newDataSouceUrl, panelID);
-
-    console.log("I pasted varibale~~~~~", inputs);
-    console.log("ref value~~~~~~~~", textRef.current.value);
     let cuurentText = textRef.current.value + `/$${e.target.value}`;
     fetchURl(inputs, cuurentText);
   };
@@ -101,9 +161,7 @@ const VariableAccordion = ({
                   defaultValue={`${variable.defaultValue}`}
                   value={inputs.defaultValue}
                   onChange={handleChange}
-                  onBlur={() => {
-                    dispatch(adjustVariable({ inputs }));
-                  }}
+                  onBlur={handleOnBlur}
                 />
               </Box>
             );

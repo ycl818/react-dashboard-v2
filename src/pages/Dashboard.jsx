@@ -2,6 +2,7 @@ import { Box } from "@mui/material";
 //import { useEffect } from "react";
 import GridLayout from "../components/GridLayout";
 import VariablesBlock from "../components/VariablesBlock";
+import { useSelector } from "react-redux";
 
 // import { useDispatch } from "react-redux";
 // import {
@@ -22,9 +23,16 @@ const Dashboard = () => {
   //     dispatch(fetchExistDashboard({ panelArray })) &&
   //     dispatch(fetchExistDashboardVariable({ variableArray }));
   // }, [data, panelArray, variableArray, dispatch]);
+
+  const show = useSelector((state) => {
+    return state.widget.widgetArray.filter(
+      (panel) => panel.data.datasource_url === null
+    );
+  });
+
   return (
     <Box height="100%">
-      <VariablesBlock />
+      {show.length ? "" : <VariablesBlock />}
       <GridLayout />
     </Box>
   );

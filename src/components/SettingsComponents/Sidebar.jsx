@@ -9,8 +9,10 @@ import {
 import HiveIcon from "@mui/icons-material/Hive";
 import BuildIcon from "@mui/icons-material/Build";
 import { Link } from "react-router-dom";
+import { useState } from "react";
 
 const Sidebar = () => {
+  const [highlight, setHighlight] = useState("General");
   const listArray = [
     {
       name: "General",
@@ -27,12 +29,30 @@ const Sidebar = () => {
     <Box bgcolor="#111217" className="fullHeightBox" p={2}>
       <List>
         {listArray.map((listElement) => (
-          <ListItem key={listElement.name}>
-            <ListItemButton component={Link} to={listElement.link}>
-              <ListItemIcon>{listElement.icon}</ListItemIcon>
+          <ListItem
+            key={listElement.name}
+            sx={{
+              borderLeft:
+                highlight === listElement.name ? "2px solid #F05A28" : "",
+            }}
+          >
+            <ListItemButton
+              component={Link}
+              to={listElement.link}
+              onClick={() => {
+                setHighlight(`${listElement.name}`);
+              }}
+            >
+              <ListItemIcon
+                sx={{ color: highlight === listElement.name ? "#F05A28" : "" }}
+              >
+                {listElement.icon}
+              </ListItemIcon>
               <ListItemText
                 primary={listElement.name}
-                sx={{ color: "white" }}
+                sx={{
+                  color: highlight === listElement.name ? "#F05A28" : "white",
+                }}
               ></ListItemText>
             </ListItemButton>
           </ListItem>

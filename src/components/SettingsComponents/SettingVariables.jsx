@@ -2,6 +2,7 @@ import { Box, Button, Divider, Typography } from "@mui/material";
 import React, { useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import Dialoag from "./Dialoag";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchErrorShowBorder,
@@ -24,6 +25,26 @@ const columns = [
     width: 150,
     editable: true,
   },
+  {
+    field: "remove",
+    headerName: "",
+    sortable: false,
+    editable: false,
+    disableColumnMenu: true,
+    disableColumnSelector: true,
+    disableColumnFilter: true,
+    renderCell: (params) => {
+      const handleClick = (e) => {
+        e.stopPropagation();
+        console.log(params.row.variableName);
+      };
+      return (
+        <Button onClick={handleClick}>
+          <DeleteIcon style={{ fontSize: "16px", marginRight: "0.5rem" }} />
+        </Button>
+      );
+    },
+  },
 ];
 
 // const rows = [
@@ -33,9 +54,6 @@ const columns = [
 
 const SettingVariables = () => {
   const [open, setOpen] = useState(false);
-  const handleNewVariable = () => {
-    setOpen(true);
-  };
 
   const rows = useSelector((state) => {
     return state.variable.variableArray;
@@ -45,29 +63,17 @@ const SettingVariables = () => {
     const panelURLs = state.widget.widgetArray.map((panel) => {
       return { id: panel.i, url: panel.data.datasource_url };
     });
-
-    return {
-      panelURLs,
-    };
+    return { panelURLs };
   });
 
   const dispatch = useDispatch();
 
   const handleProcessRowUpdate = (newRow, oldRow) => {
     dispatch(updateTargetVariable({ newRow }));
-    console.log(
-      "file: SettingVariables.jsx:55 ~ handleProcessRowUpdate ~ newRow:",
-      newRow
-    );
-
     const targetURLs = panelURLs.filter((panel) =>
       panel.url.includes(newRow.variableName)
     );
 
-    console.log(
-      "file: SettingVariables.jsx:61 ~ handleProcessRowUpdate ~ targetURLs:",
-      targetURLs
-    );
     const newTargetURLs = targetURLs?.map((panel) => {
       let panelURL = panel.url;
       if (panelURL.includes(newRow.variableName)) {
@@ -78,12 +84,7 @@ const SettingVariables = () => {
       }
       return { id: panel.id, url: panelURL };
     });
-    console.log(
-      "file: SettingVariables.jsx:75 ~ newTargetURLs ~ newTargetURLs:",
-      newTargetURLs
-    );
 
-    // Step 2: Send all URLs at the same time using Promise.all()
     Promise.all(
       newTargetURLs.map(async (panel) => {
         try {
@@ -91,13 +92,15 @@ const SettingVariables = () => {
           const id = panel.id;
           let result = response?.data;
           const res = false;
+          const message = "";
           // find url is in which panel then update
           dispatch(updateDataByURL({ result, id }));
-          dispatch(fetchErrorShowBorder({ res, id }));
+          dispatch(fetchErrorShowBorder({ res, id, message }));
         } catch (error) {
           const id = panel.id;
           const res = true;
-          dispatch(fetchErrorShowBorder({ res, id }));
+          const message = error.message;
+          dispatch(fetchErrorShowBorder({ res, id, message }));
           console.log(
             "file: variablesArea.jsx:65 ~ newPanelsURL.map ~ error:",
             error
@@ -107,13 +110,10 @@ const SettingVariables = () => {
     )
       .then((responses) => {
         console.log(responses);
-        // Do something with the array of response data
       })
       .catch((error) => {
         console.error(error);
       });
-
-    // after modified variable, need to fetch urL again in every panel. So need to map over all panel's url and check which variables are in using.
   };
 
   return (
@@ -127,7 +127,9 @@ const SettingVariables = () => {
         <Button
           variant="contained"
           sx={{ marginRight: "5rem" }}
-          onClick={handleNewVariable}
+          onClick={() => {
+            setOpen(true);
+          }}
         >
           New
         </Button>
@@ -152,7 +154,6 @@ const SettingVariables = () => {
             },
           }}
           pageSizeOptions={[10]}
-          //checkboxSelection
           disableRowSelectionOnClick
           processRowUpdate={handleProcessRowUpdate}
           onProcessRowUpdateError={(error) => console.log(error)}

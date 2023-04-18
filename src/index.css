@@ -17,7 +17,6 @@ body {
 ::-webkit-scrollbar {
 
     width: 7px;
-
   }
 
   ::-webkit-scrollbar-button {
@@ -47,5 +46,4 @@ body {
   ::-webkit-scrollbar-track {
 
     box-shadow: transparent;
-
   }

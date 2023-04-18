@@ -1,20 +1,25 @@
 import * as React from "react";
-// import Button from "@mui/material/Button";
-// import Menu from "@mui/material/Menu";
-// import MenuItem from "@mui/material/MenuItem";
-// import Fade from "@mui/material/Fade";
 import { Link } from "react-router-dom";
-
-import { Typography, Fade, MenuItem, Menu, Button } from "@mui/material";
+import {
+  Typography,
+  Fade,
+  MenuItem,
+  Menu,
+  Button,
+  Divider,
+} from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import AutoFixHighSharpIcon from "@mui/icons-material/AutoFixHighSharp";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import DeleteIcon from "@mui/icons-material/Delete";
 import InfoIcon from "@mui/icons-material/Info";
 import InspectDrawer from "./InspectDrawer";
 import { useState } from "react";
+import RemoveDialog from "./RemoveDialog";
 
 const DropdownTitle = ({ title, panelID }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
+
   const open = Boolean(anchorEl);
   const handleClick = (e) => {
     setAnchorEl(e.currentTarget);
@@ -24,6 +29,7 @@ const DropdownTitle = ({ title, panelID }) => {
   };
 
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [confirmDelete, setComfirmDelete] = useState(false);
 
   const handleInspect = () => {
     setDrawerOpen(true);
@@ -76,9 +82,9 @@ const DropdownTitle = ({ title, panelID }) => {
             to={`${panelID}/view`}
           >
             <VisibilityIcon
-              style={{ fontSize: "12px", marginRight: "0.5rem" }}
+              style={{ fontSize: "16px", marginRight: "0.5rem" }}
             />
-            <Typography>View</Typography>
+            <Typography sx={{ fontSize: "14px" }}>View</Typography>
           </Link>
         </MenuItem>
         <MenuItem>
@@ -92,9 +98,9 @@ const DropdownTitle = ({ title, panelID }) => {
             to={`${panelID}/edit`}
           >
             <AutoFixHighSharpIcon
-              style={{ fontSize: "12px", marginRight: "0.5rem" }}
+              style={{ fontSize: "16px", marginRight: "0.5rem" }}
             />
-            Edit
+            <Typography sx={{ fontSize: "14px" }}>Edit</Typography>
           </Link>
         </MenuItem>
         <MenuItem
@@ -103,14 +109,38 @@ const DropdownTitle = ({ title, panelID }) => {
             handleClose();
           }}
         >
-          <InfoIcon style={{ fontSize: "12px", marginRight: "0.5rem" }} />
-          Inspect
+          <InfoIcon style={{ fontSize: "16px", marginRight: "0.5rem" }} />
+
+          <Typography sx={{ fontSize: "14px" }}>Inspect</Typography>
+        </MenuItem>
+        <Divider
+          sx={{
+            backgroundColor: "white",
+            borderBottomWidth: 1,
+            width: "100%",
+            textAlign: "center",
+          }}
+        />
+        <MenuItem
+          onClick={() => {
+            setComfirmDelete(true);
+            handleClose();
+          }}
+        >
+          <DeleteIcon style={{ fontSize: "16px", marginRight: "0.5rem" }} />
+          <Typography sx={{ fontSize: "14px" }}>Remove</Typography>
         </MenuItem>
       </Menu>
       <InspectDrawer
         panelID={panelID}
         drawerOpen={drawerOpen}
         setDrawerOpen={setDrawerOpen}
+      />
+
+      <RemoveDialog
+        setComfirmDelete={setComfirmDelete}
+        confirmDelete={confirmDelete}
+        panelID={panelID}
       />
     </>
   );
