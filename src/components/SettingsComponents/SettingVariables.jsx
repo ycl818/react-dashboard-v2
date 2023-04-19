@@ -61,59 +61,25 @@ const SettingVariables = () => {
         const handleClick = (e) => {
           e.stopPropagation();
           const target = params.row.variableName;
-          const targetValue = params.row.defaultValue;
           dispatch(removeVariable({ target }));
           const targetURLs = panelURLs.filter((panel) =>
             panel.url.includes(target)
           );
-          console.log(
-            "file: SettingVariables.jsx:69 ~ handleClick ~ targetURLs:",
-            targetURLs
-          );
-
           const newTargetURLs = targetURLs?.map((panel) => {
             let panelURL = panel.url;
-
-            // if (panelURL.includes(target)) {
-            //   panelURL = panelURL.replace(
-            //     new RegExp(`@${target}`, "g"),
-            //     targetValue
-            //   );
-            // }
-
             const filteredVariableArray = variableArray.filter(
               (variable) => variable.variableName !== target
             );
-
             filteredVariableArray.map((variable) => {
-              console.log(
-                "file: SettingVariables.jsx:89 ~ filteredVariableArray.map ~ variable:",
-                variable
-              );
-
               if (panelURL.includes(`@${variable.variableName}`)) {
-                console.log(
-                  "Before ~ filteredVariableArray.map ~ panelURL:",
-                  panelURL
-                );
                 panelURL = panelURL.replace(
                   new RegExp(`@${variable.variableName}`, "g"),
                   variable.defaultValue
                 );
-                console.log(
-                  "file: SettingVariables.jsx:97 ~ filteredVariableArray.map ~ panelURL:",
-                  panelURL
-                );
               }
             });
-
-            console.log("file: NEW~ newTargetURLs ~ panelURL:", panelURL);
             return { id: panel.id, url: panelURL };
           });
-          console.log(
-            "file: SettingVariables.jsx:109 ~ newTargetURLs ~ newTargetURLs:",
-            newTargetURLs
-          );
 
           Promise.all(
             newTargetURLs.map(async (panel) => {
@@ -131,10 +97,6 @@ const SettingVariables = () => {
                 const res = true;
                 const message = error.message;
                 dispatch(fetchErrorShowBorder({ res, id, message }));
-                console.log(
-                  "file: variablesArea.jsx:65 ~ newPanelsURL.map ~ error:",
-                  error
-                );
               }
             })
           )
@@ -203,10 +165,6 @@ const SettingVariables = () => {
           const res = true;
           const message = error.message;
           dispatch(fetchErrorShowBorder({ res, id, message }));
-          console.log(
-            "file: variablesArea.jsx:65 ~ newPanelsURL.map ~ error:",
-            error
-          );
         }
       })
     )
