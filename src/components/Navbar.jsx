@@ -16,15 +16,18 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
+import DashboardIcon from "@mui/icons-material/Dashboard";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addWidget, store, loadUploadData, loadUploadVariable } from "../store";
+import ChooseDashboard from "./ChooseDashboard";
 
 export default function ButtonAppBar() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const dispatch = useDispatch();
 
+  const [selectDashboard, setSelectDashboard] = useState(false);
   // const Icons = styled(Box)(({ theme }) => ({
   //   backgroundColor: "yellow",
   // }));
@@ -105,6 +108,10 @@ export default function ButtonAppBar() {
     }
   };
 
+  const handleOpenSelectDashboard = () => {
+    setSelectDashboard(true);
+  };
+
   const [editURL, setEditURL] = useState("");
   console.log("file: Navbar.jsx:105 ~ ButtonAppBar ~ editURL:", editURL);
 
@@ -151,7 +158,6 @@ export default function ButtonAppBar() {
       
             Add Panel
           </Button> */}
-
           {pathname === "/" ? (
             <Tooltip title="Add Panel">
               <IconButton onClick={handleAddPanel}>
@@ -161,7 +167,6 @@ export default function ButtonAppBar() {
           ) : (
             ""
           )}
-
           {pathname === "/" ? (
             <Tooltip title="Download Panel">
               <IconButton onClick={handleDownloadPanel}>
@@ -171,7 +176,6 @@ export default function ButtonAppBar() {
           ) : (
             ""
           )}
-
           {pathname === "/" ? (
             <Tooltip title="Upload Panel">
               <IconButton component="label">
@@ -188,7 +192,6 @@ export default function ButtonAppBar() {
           ) : (
             ""
           )}
-
           {pathname === "/" ? (
             <Tooltip title="Save Dashboard">
               <IconButton>
@@ -200,7 +203,15 @@ export default function ButtonAppBar() {
           )}
 
           {pathname === "/" ? <Button color="inherit">Time</Button> : ""}
-
+          {pathname === "/" ? (
+            <Tooltip title="Select Dashboard">
+              <IconButton onClick={handleOpenSelectDashboard}>
+                <DashboardIcon />
+              </IconButton>
+            </Tooltip>
+          ) : (
+            ""
+          )}
           {pathname !== "/" ? (
             <Tooltip title="Save Panel">
               <IconButton
@@ -214,7 +225,6 @@ export default function ButtonAppBar() {
           ) : (
             ""
           )}
-
           <Tooltip title="Settings">
             <IconButton
               onClick={() => {
@@ -226,6 +236,11 @@ export default function ButtonAppBar() {
             </IconButton>
           </Tooltip>
         </Toolbar>
+
+        <ChooseDashboard
+          setSelectDashboard={setSelectDashboard}
+          selectDashboard={selectDashboard}
+        />
       </AppBar>
     </Box>
   );

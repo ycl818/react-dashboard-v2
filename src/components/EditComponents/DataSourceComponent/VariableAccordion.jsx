@@ -67,9 +67,9 @@ const VariableAccordion = ({
     const newPanelsURL = filteredURLs?.map((panel) => {
       let newUrl = panel.url;
       inputs.forEach((variable) => {
-        if (newUrl.includes(`$${variable.variableName}`)) {
+        if (newUrl.includes(`@${variable.variableName}`)) {
           newUrl = newUrl.replace(
-            new RegExp(`\\$${variable.variableName}`, "g"),
+            new RegExp(`@${variable.variableName}`, "g"),
             variable.defaultValue
           );
         }
@@ -109,10 +109,11 @@ const VariableAccordion = ({
   };
 
   const handlePasteVariable = (e) => {
-    const newDataSouceUrl = datasource_url + `/$${e.target.value}`;
+    const pasteKey = e.target.value;
+    const newDataSouceUrl = datasource_url + "/@" + `${pasteKey}`;
     setTextValue(newDataSouceUrl);
     handleSetURL("link", newDataSouceUrl, panelID);
-    let cuurentText = textRef.current.value + `/$${e.target.value}`;
+    let cuurentText = textRef.current.value + "/@" + `${pasteKey}`;
     fetchURl(inputs, cuurentText);
   };
 

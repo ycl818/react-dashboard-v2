@@ -53,9 +53,9 @@ const DataSourceBlock = ({ panelID }) => {
 
       console.log("before regex:", currentText);
 
-      currentText = currentText.replace(/\$(\w+)/g, (match, variableName) => {
-        const variableValue = defaultValues[variableName] || "";
-        return variableValue;
+      currentText = currentText.replace(/\@(\w+)/g, (match, variableName) => {
+        const variableValue = defaultValues[variableName];
+        return variableValue !== undefined ? variableValue : match;
       });
       console.log("after regex:", currentText);
       const response = await axios.get(currentText);

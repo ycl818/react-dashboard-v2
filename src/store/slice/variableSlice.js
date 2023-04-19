@@ -31,6 +31,13 @@ const variableSlice = createSlice({
       state.variableArray[variableArrayIndex].defaultValue =
         action.payload.newRow.defaultValue;
     },
+    removeVariable: (state, action) => {
+      const updated = state.variableArray.filter(
+        (variable) => variable.variableName !== action.payload.target
+      );
+
+      state.variableArray = updated;
+    },
   },
 });
 
@@ -40,5 +47,6 @@ export const {
   updateTargetVariable,
   fetchExistDashboardVariable,
   loadUploadVariable,
+  removeVariable,
 } = variableSlice.actions;
 export const variableReducer = variableSlice.reducer;

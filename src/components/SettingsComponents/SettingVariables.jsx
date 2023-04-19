@@ -6,46 +6,11 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchErrorShowBorder,
+  removeVariable,
   updateDataByURL,
   updateTargetVariable,
 } from "../../store";
 import axios from "axios";
-
-const columns = [
-  //{ field: "id", headerName: "ID", width: 200, hidden: true, editable: true },
-  {
-    field: "variableName",
-    headerName: "Variable",
-    width: 150,
-    editable: true,
-  },
-  {
-    field: "defaultValue",
-    headerName: "Default Value",
-    width: 150,
-    editable: true,
-  },
-  {
-    field: "remove",
-    headerName: "",
-    sortable: false,
-    editable: false,
-    disableColumnMenu: true,
-    disableColumnSelector: true,
-    disableColumnFilter: true,
-    renderCell: (params) => {
-      const handleClick = (e) => {
-        e.stopPropagation();
-        console.log(params.row.variableName);
-      };
-      return (
-        <Button onClick={handleClick}>
-          <DeleteIcon style={{ fontSize: "16px", marginRight: "0.5rem" }} />
-        </Button>
-      );
-    },
-  },
-];
 
 // const rows = [
 //   { id: 1, variable: "product", Definition: "Test" },
@@ -59,14 +24,135 @@ const SettingVariables = () => {
     return state.variable.variableArray;
   });
 
-  const { panelURLs } = useSelector((state) => {
+  const { panelURLs, variableArray } = useSelector((state) => {
     const panelURLs = state.widget.widgetArray.map((panel) => {
       return { id: panel.i, url: panel.data.datasource_url };
     });
-    return { panelURLs };
+
+    const variableArray = state.variable.variableArray;
+    return { panelURLs, variableArray };
   });
 
   const dispatch = useDispatch();
+
+  const columns = [
+    //{ field: "id", headerName: "ID", width: 200, hidden: true, editable: true },
+    {
+      field: "variableName",
+      headerName: "Variable",
+      width: 150,
+      editable: true,
+    },
+    {
+      field: "defaultValue",
+      headerName: "Default Value",
+      width: 150,
+      editable: true,
+    },
+    {
+      field: "remove",
+      headerName: "",
+      sortable: false,
+      editable: false,
+      disableColumnMenu: true,
+      disableColumnSelector: true,
+      disableColumnFilter: true,
+      renderCell: (params) => {
+        const handleClick = (e) => {
+          e.stopPropagation();
+          const target = params.row.variableName;
+          const targetValue = params.row.defaultValue;
+          dispatch(removeVariable({ target }));
+          const targetURLs = panelURLs.filter((panel) =>
+            panel.url.includes(target)
+          );
+          console.log(
+            "file: SettingVariables.jsx:69 ~ handleClick ~ targetURLs:",
+            targetURLs
+          );
+
+          const newTargetURLs = targetURLs?.map((panel) => {
+            let panelURL = panel.url;
+
+            // if (panelURL.includes(target)) {
+            //   panelURL = panelURL.replace(
+            //     new RegExp(`@${target}`, "g"),
+            //     targetValue
+            //   );
+            // }
+
+            const filteredVariableArray = variableArray.filter(
+              (variable) => variable.variableName !== target
+            );
+
+            filteredVariableArray.map((variable) => {
+              console.log(
+                "file: SettingVariables.jsx:89 ~ filteredVariableArray.map ~ variable:",
+                variable
+              );
+
+              if (panelURL.includes(`@${variable.variableName}`)) {
+                console.log(
+                  "Before ~ filteredVariableArray.map ~ panelURL:",
+                  panelURL
+                );
+                panelURL = panelURL.replace(
+                  new RegExp(`@${variable.variableName}`, "g"),
+                  variable.defaultValue
+                );
+                console.log(
+                  "file: SettingVariables.jsx:97 ~ filteredVariableArray.map ~ panelURL:",
+                  panelURL
+                );
+              }
+            });
+
+            console.log("file: NEW~ newTargetURLs ~ panelURL:", panelURL);
+            return { id: panel.id, url: panelURL };
+          });
+          console.log(
+            "file: SettingVariables.jsx:109 ~ newTargetURLs ~ newTargetURLs:",
+            newTargetURLs
+          );
+
+          Promise.all(
+            newTargetURLs.map(async (panel) => {
+              try {
+                const response = await axios.get(panel.url);
+                const id = panel.id;
+                let result = response?.data;
+                const res = false;
+                const message = "";
+                // find url is in which panel then update
+                dispatch(updateDataByURL({ result, id }));
+                dispatch(fetchErrorShowBorder({ res, id, message }));
+              } catch (error) {
+                const id = panel.id;
+                const res = true;
+                const message = error.message;
+                dispatch(fetchErrorShowBorder({ res, id, message }));
+                console.log(
+                  "file: variablesArea.jsx:65 ~ newPanelsURL.map ~ error:",
+                  error
+                );
+              }
+            })
+          )
+            .then((responses) => {
+              console.log(responses);
+            })
+            .catch((error) => {
+              console.error(error);
+            });
+        };
+        return (
+          <Button onClick={handleClick}>
+            <DeleteIcon style={{ fontSize: "16px", marginRight: "0.5rem" }} />
+          </Button>
+        );
+      },
+    },
+  ];
 
   const handleProcessRowUpdate = (newRow, oldRow) => {
     dispatch(updateTargetVariable({ newRow }));
@@ -76,12 +162,28 @@ const SettingVariables = () => {
 
     const newTargetURLs = targetURLs?.map((panel) => {
       let panelURL = panel.url;
+      console.log(
+        "file: SettingVariables.jsx:79 ~ newTargetURLs ~ panelURL:",
+        panelURL
+      );
+
       if (panelURL.includes(newRow.variableName)) {
         panelURL = panelURL.replace(
-          new RegExp(`\\$${newRow.variableName}`, "g"),
+          new RegExp(`@${newRow.variableName}`, "g"),
           newRow.defaultValue
         );
       }
+
+      variableArray.map((variable) => {
+        if (panelURL.includes(`@${variable.variableName}`)) {
+          panelURL = panelURL.replace(
+            new RegExp(`@${variable.variableName}`, "g"),
+            variable.defaultValue
+          );
+        }
+      });
+
+      console.log("file: NEW~ newTargetURLs ~ panelURL:", panelURL);
       return { id: panel.id, url: panelURL };
     });
 

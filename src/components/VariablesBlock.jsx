@@ -41,13 +41,17 @@ const VariablesBlock = () => {
     const filteredURLs = panelURLs.filter((panel) =>
       panel.url.includes(e.target.name)
     );
+    console.log(
+      "file: VariablesBlock.jsx:44 ~ handleOnBlur ~ filteredURLs:",
+      filteredURLs
+    );
 
     const newPanelsURL = filteredURLs?.map((panel) => {
       let newUrl = panel.url;
       inputs.forEach((variable) => {
-        if (newUrl.includes(`$${variable.variableName}`)) {
+        if (newUrl.includes(`@${variable.variableName}`)) {
           newUrl = newUrl.replace(
-            new RegExp(`\\$${variable.variableName}`, "g"),
+            new RegExp(`@${variable.variableName}`, "g"),
             variable.defaultValue
           );
         }

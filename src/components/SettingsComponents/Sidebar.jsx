@@ -44,14 +44,14 @@ const Sidebar = () => {
               }}
             >
               <ListItemIcon
-                sx={{ color: highlight === listElement.name ? "#F05A28" : "" }}
+                sx={{ color: highlight === listElement.name ? "#59dbf2" : "" }}
               >
                 {listElement.icon}
               </ListItemIcon>
               <ListItemText
                 primary={listElement.name}
                 sx={{
-                  color: highlight === listElement.name ? "#F05A28" : "white",
+                  color: highlight === listElement.name ? "#59dbf2" : "white",
                 }}
               ></ListItemText>
             </ListItemButton>

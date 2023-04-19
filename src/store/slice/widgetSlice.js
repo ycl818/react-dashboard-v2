@@ -1,28 +1,29 @@
 import { createSlice, nanoid } from "@reduxjs/toolkit";
+const initialState = {
+  widgetArray:
+    [
+      {
+        i: nanoid(),
+        x: 0,
+        y: 0,
+        w: 4,
+        h: 2,
+        panelName: "",
+        data: {
+          datasource: null,
+          datasource_url: null,
+          dataType: null,
+          dataDetail: null,
+        },
+        fetchError: false,
+        fetchErrorMessage: "",
+      },
+    ] || [],
+};
 
 const widgetSlice = createSlice({
   name: "widgets",
-  initialState: {
-    widgetArray:
-      [
-        {
-          i: nanoid(),
-          x: 0,
-          y: 0,
-          w: 4,
-          h: 2,
-          panelName: "",
-          data: {
-            datasource: null,
-            datasource_url: null,
-            dataType: null,
-            dataDetail: null,
-          },
-          fetchError: false,
-          fetchErrorMessage: "",
-        },
-      ] || [],
-  },
+  initialState,
   reducers: {
     fetchErrorShowBorder: (state, action) => {
       console.log(action);
@@ -138,6 +139,10 @@ const widgetSlice = createSlice({
       tempArray.splice(panelIndex, 1);
       state.widgetArray = tempArray;
     },
+    cleanUpAllPanel: (state, action) => {
+      console.log(action);
+      state.widgetArray = initialState;
+    },
   },
 });
 
@@ -146,7 +151,6 @@ export const {
   addWidget,
   deleteWidget,
   updateData,
-
   updateDataType,
   loadUploadData,
   updatePanelName,
@@ -155,5 +159,6 @@ export const {
   pasteVariableIntoDataSourceURL,
   updateDataByURL,
   fetchErrorShowBorder,
+  cleanUpAllPanel,
 } = widgetSlice.actions;
 export const widgetReducer = widgetSlice.reducer;
