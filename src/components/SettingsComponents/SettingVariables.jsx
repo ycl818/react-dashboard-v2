@@ -202,10 +202,30 @@ const SettingVariables = () => {
           textAlign: "center",
         }}
       />
-      <Box sx={{ height: "80%", width: "100%", padding: "2rem" }}>
+      <Box
+        sx={{
+          height: "80%",
+          width: "100%",
+          padding: "2rem",
+          "& .MuiDataGrid-root": {
+            color: "white",
+            border: "none",
+          },
+          "& .MuiDataGrid-cell": {
+            borderBottom: `1px solid #48494e !important`,
+          },
+          "& .MuiDataGrid-columnHeaders": {
+            borderBottom: `1px solid pink !important`,
+          },
+          "& .MuiDataGrid-columnSeparator": {
+            visibility: "hidden",
+          },
+        }}
+      >
         <DataGrid
           rows={rows}
           columns={columns}
+          hideFooter={true}
           initialState={{
             pagination: {
               paginationModel: {

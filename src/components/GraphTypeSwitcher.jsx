@@ -8,6 +8,7 @@ const GraphTypeSwitcher = ({
   height,
   XaxisName,
   dataKey,
+  panelID,
 }) => {
   return (
     <ChartTypeSwitcher
@@ -17,6 +18,7 @@ const GraphTypeSwitcher = ({
       height={height}
       XaxisName={XaxisName}
       dataKey={dataKey}
+      panelID={panelID}
     />
   );
 };

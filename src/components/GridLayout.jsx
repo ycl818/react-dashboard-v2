@@ -24,6 +24,7 @@ const GridLayout = () => {
   //   isFetchErrorArray
   // );
   const widgetA = useSelector((state) => state.widget.widgetArray);
+  console.log("file: GridLayout.jsx:27 ~ GridLayout ~ widgetA:", widgetA);
   //const layouts = useSelector((state) => state.widget.widgetArray);
   //console.log(widgetA);
   //console.log(widgetA[0].data.dataDetail);
@@ -74,7 +75,7 @@ const GridLayout = () => {
         {widgetA?.map((widget, index) => {
           // console.log(widget.data);
           let keysArry = [];
-          if (widget.data?.dataDetail) {
+          if (widget.data?.dataDetail && widget.data?.dataDetail.length > 0) {
             keysArry = Object.keys(widget.data.dataDetail[0]);
             //console.log(keysArry);
           }
@@ -122,6 +123,7 @@ const GridLayout = () => {
                       height={300}
                       dataKey={keysArry[1]}
                       XaxisName={keysArry[0]}
+                      panelID={widget.i}
                     />
                   </Box>
                 </>

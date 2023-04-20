@@ -18,8 +18,14 @@ import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { addWidget, store, loadUploadData, loadUploadVariable } from "../store";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addWidget,
+  store,
+  loadUploadData,
+  loadUploadVariable,
+  loadUploadDashboardName,
+} from "../store";
 import ChooseDashboard from "./ChooseDashboard";
 
 export default function ButtonAppBar() {
@@ -27,6 +33,7 @@ export default function ButtonAppBar() {
   const { pathname } = useLocation();
   const dispatch = useDispatch();
 
+  const dashboardName = useSelector((state) => state.widget.dashboardName);
   const [selectDashboard, setSelectDashboard] = useState(false);
   // const Icons = styled(Box)(({ theme }) => ({
   //   backgroundColor: "yellow",
@@ -98,10 +105,12 @@ export default function ButtonAppBar() {
       const fileData = JSON.parse(e.target.result);
       const widgetArray = fileData?.widget?.widgetArray;
       const variableArray = fileData?.variable?.variableArray;
+      const dashboardName = fileData?.widget?.dashboardName;
       console.log(fileData);
 
       dispatch(loadUploadData({ widgetArray }));
       dispatch(loadUploadVariable({ variableArray }));
+      dispatch(loadUploadDashboardName({ dashboardName }));
     };
     if (fileReader.readyState === 2) {
       fileReader.abort();
@@ -144,14 +153,14 @@ export default function ButtonAppBar() {
           )}
           <Typography variant="subtitle1" component="div" sx={{ flexGrow: 1 }}>
             {pathname === "/settings" ? (
-              "New dashboard / Settings"
+              `${dashboardName} / Settings`
             ) : pathname === "/" ? (
               <>
                 <GridViewIcon sx={{ marginRight: "0.5rem" }} />
-                {"New dashboard"}
+                {`${dashboardName}`}
               </>
             ) : (
-              "New dashboard / Edit Panel"
+              `${dashboardName} / Edit Panel`
             )}
           </Typography>
           {/* <Button color="inherit">

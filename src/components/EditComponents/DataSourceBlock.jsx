@@ -13,6 +13,7 @@ import { useRef, useState } from "react";
 import axios from "axios";
 import InspectDrawer from "../InspectDrawer";
 import VariableAccordion from "./DataSourceComponent/VariableAccordion";
+import RealTimeChart from "../testComponents/RealTimeChart";
 
 const DataSourceBlock = ({ panelID }) => {
   const dispatch = useDispatch();
@@ -58,6 +59,7 @@ const DataSourceBlock = ({ panelID }) => {
         return variableValue !== undefined ? variableValue : match;
       });
       console.log("after regex:", currentText);
+      if (currentText === "http://localhost:5001/updates") return;
       const response = await axios.get(currentText);
       const data = response.data;
       dispatch(updateData({ data, panelID }));
@@ -117,7 +119,8 @@ const DataSourceBlock = ({ panelID }) => {
             setTextValue(e.target.value);
             const url = e.target.value;
             handleSetURL("link", url, panelID);
-            fetchURl(variablesArray, textRef.current.value);
+            if (url !== "http://localhost:5001/updates")
+              fetchURl(variablesArray, textRef.current.value);
           }}
         />
         <Button
@@ -147,6 +150,8 @@ const DataSourceBlock = ({ panelID }) => {
       ) : (
         ""
       )}
+
+      {/* <RealTimeChart /> */}
 
       <InspectDrawer
         panelID={panelID}

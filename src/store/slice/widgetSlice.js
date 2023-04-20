@@ -1,5 +1,6 @@
 import { createSlice, nanoid } from "@reduxjs/toolkit";
 const initialState = {
+  dashboardName: "New dashboard",
   widgetArray:
     [
       {
@@ -25,6 +26,12 @@ const widgetSlice = createSlice({
   name: "widgets",
   initialState,
   reducers: {
+    loadUploadDashboardName: (state, action) => {
+      state.dashboardName = action.payload.dashboardName;
+    },
+    updateDashboardName: (state, action) => {
+      state.dashboardName = action.payload;
+    },
     fetchErrorShowBorder: (state, action) => {
       console.log(action);
       const panelIndex = state.widgetArray.findIndex(
@@ -82,11 +89,11 @@ const widgetSlice = createSlice({
       state.widgetArray[panelIndex].data.dataType = action.payload.selectedType;
     },
     updateData: (state, action) => {
-      console.log(action);
       const panelIndex = state.widgetArray.findIndex(
         (panel) => panel.i === action.payload.panelID
       );
-      state.widgetArray[panelIndex].data.dataDetail = action.payload.data;
+
+      state.widgetArray[panelIndex].data.dataDetail = action.payload?.data;
     },
     modifyLayouts: (state, action) => {
       // const tempArray = state.widgetArray.map((widget) => ({
@@ -160,5 +167,7 @@ export const {
   updateDataByURL,
   fetchErrorShowBorder,
   cleanUpAllPanel,
+  updateDashboardName,
+  loadUploadDashboardName,
 } = widgetSlice.actions;
 export const widgetReducer = widgetSlice.reducer;

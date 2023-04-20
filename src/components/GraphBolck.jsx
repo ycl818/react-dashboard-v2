@@ -15,11 +15,10 @@ const GraphBolck = ({ panelID }) => {
   });
 
   let keysArry = [];
-  if (dataDetail) {
+  if (dataDetail && Array.isArray(dataDetail) && dataDetail.length > 0) {
     keysArry = Object.keys(dataDetail[0]);
     console.log(keysArry);
   }
-
   return (
     <>
       <Box
@@ -39,8 +38,9 @@ const GraphBolck = ({ panelID }) => {
           data={dataDetail}
           width={500}
           height={300}
-          dataKey={keysArry[1]}
-          XaxisName={keysArry[0]}
+          dataKey={keysArry[1] || "name"}
+          XaxisName={keysArry[0] || "hi"}
+          panelID={panelID}
         />
       </Box>
     </>

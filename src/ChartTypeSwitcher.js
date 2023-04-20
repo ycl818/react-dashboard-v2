@@ -15,6 +15,7 @@ import {
   Line,
   Area,
 } from "recharts";
+import RealTimeChart from "./components/testComponents/RealTimeChart";
 
 export const ChartTypeSwitcher = ({
   type,
@@ -23,6 +24,7 @@ export const ChartTypeSwitcher = ({
   height,
   XaxisName,
   dataKey,
+  panelID,
 }) => {
   // console.log(width, height)
   // console.log(data)
@@ -125,6 +127,8 @@ export const ChartTypeSwitcher = ({
           </AreaChart>
         </ResponsiveContainer>
       );
+    case "Time Series":
+      return <RealTimeChart panelID={panelID} />;
     default:
       return null;
   }
