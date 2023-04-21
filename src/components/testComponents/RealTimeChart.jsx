@@ -16,19 +16,18 @@ import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { useDispatch, useSelector } from "react-redux";
 import { updateData } from "../../store";
 
-const serverBaseURL = "http://localhost:5001";
-
 function formatTime(timestamp) {
   const date = new Date(timestamp);
   return `${date.toLocaleTimeString("en-US", { hour12: false })}`;
 }
 
 export default function RealTimeChart({ panelID }) {
-  let { serverURL } = useSelector((state) => {
+  let { serverURL, dataDetail } = useSelector((state) => {
     const panelArray = state.widget.widgetArray;
     const targetPanel = panelArray.filter((panel) => panel.i === panelID);
     return {
       serverURL: targetPanel[0]?.data?.datasource_url,
+      dataDetail: targetPanel[0]?.data?.dataDetail,
     };
   });
   console.log(
@@ -36,49 +35,61 @@ export default function RealTimeChart({ panelID }) {
     serverURL
   );
   const dispatch = useDispatch();
-  const [data, setData] = useState([]);
 
   const [domain, setDomain] = useState([null, null]);
   const [eventSource, setEventSource] = useState(null);
+  const [data, setData] = useState([]);
   // Dispatch data after it has been initialized
-  if (data.length > 0) {
-    dispatch(updateData({ data, panelID }));
-  }
-  const fetchData = useCallback(async () => {
-    if (serverURL) {
-      const newEventSource = await fetchEventSource(serverURL, {
-        onmessage(ev) {
-          const newData = JSON.parse(ev.data);
-          console.log(
-            "file: RealTimeChart.jsx:43 ~ onmessage ~ newData:",
-            newData
-          );
-          setData((prevData) => [...prevData, newData]);
-        },
-      });
-
-      setEventSource(newEventSource);
-    }
-  }, [serverURL]);
+  // if (data.length > 0) {
+  //   dispatch(updateData({ data, panelID }));
+  // }
 
   useEffect(() => {
-    console.log("ooooooooooooooooooooooooooooooooooooooooooooo");
+    let es = null;
+    const controller = new AbortController();
+    const fetchData = async () => {
+      if (serverURL) {
+        es = await fetchEventSource(serverURL, {
+          signal: controller.signal,
+          onmessage(ev) {
+            const newData = JSON.parse(ev.data);
+            console.log(
+              " file: RealTimeChart.jsx:58 ~ onmessage ~ newData:",
+              newData
+            );
+            setData((prevData) => [...prevData, newData]); // update newDataArray
+          },
+          onclose() {
+            console.log("Connection Closed by the Server");
+          },
+          onerror(err) {
+            console.log("There was an error from the Server!", err);
+          },
+        });
+
+        setEventSource(es);
+      }
+    };
 
     fetchData();
 
     return () => {
-      if (eventSource) {
-        eventSource.close();
+      if (es) {
+        es.close();
       }
+      controller.abort();
     };
-  }, [fetchData]);
+  }, [serverURL]);
 
   useEffect(() => {
-    if (serverURL && eventSource) {
-      eventSource.close();
-      fetchData();
+    if (data.length > 0) {
+      dispatch(updateData({ data, panelID }));
     }
-  }, [serverURL, fetchData]);
+  }, [data, dispatch, panelID]);
+
+  useEffect(() => {
+    setData([]); // clear data array when serverURL changes
+  }, [serverURL]);
 
   // calculate domain of XAxis based on current time
   const now = new Date();
@@ -105,7 +116,6 @@ export default function RealTimeChart({ panelID }) {
   // const middleValue = minValue + range / 2;
   // const yDomain = [middleValue - range / 2, middleValue + range / 2];
 
-  // render chart using `data`
   return (
     <ResponsiveContainer>
       <LineChart data={filteredData}>

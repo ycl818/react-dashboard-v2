@@ -13,7 +13,6 @@ import { useRef, useState } from "react";
 import axios from "axios";
 import InspectDrawer from "../InspectDrawer";
 import VariableAccordion from "./DataSourceComponent/VariableAccordion";
-import RealTimeChart from "../testComponents/RealTimeChart";
 
 const DataSourceBlock = ({ panelID }) => {
   const dispatch = useDispatch();
@@ -60,6 +59,7 @@ const DataSourceBlock = ({ panelID }) => {
       });
       console.log("after regex:", currentText);
       if (currentText === "http://localhost:5001/updates") return;
+      if (currentText === "http://localhost:5001/updates/v2") return;
       const response = await axios.get(currentText);
       const data = response.data;
       dispatch(updateData({ data, panelID }));
@@ -150,8 +150,6 @@ const DataSourceBlock = ({ panelID }) => {
       ) : (
         ""
       )}
-
-      {/* <RealTimeChart /> */}
 
       <InspectDrawer
         panelID={panelID}
