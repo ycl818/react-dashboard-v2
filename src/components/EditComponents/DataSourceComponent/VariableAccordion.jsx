@@ -110,9 +110,11 @@ const VariableAccordion = ({
 
   const handlePasteVariable = (e) => {
     const pasteKey = e.target.value;
+    // eslint-disable-next-line
     const newDataSouceUrl = datasource_url + "/@" + `${pasteKey}`;
     setTextValue(newDataSouceUrl);
     handleSetURL("link", newDataSouceUrl, panelID);
+    // eslint-disable-next-line
     let cuurentText = textRef.current.value + "/@" + `${pasteKey}`;
     fetchURl(inputs, cuurentText);
   };

@@ -53,7 +53,7 @@ const DataSourceBlock = ({ panelID }) => {
 
       console.log("before regex:", currentText);
 
-      currentText = currentText.replace(/\@(\w+)/g, (match, variableName) => {
+      currentText = currentText.replace(/@(\w+)/g, (match, variableName) => {
         const variableValue = defaultValues[variableName];
         return variableValue !== undefined ? variableValue : match;
       });

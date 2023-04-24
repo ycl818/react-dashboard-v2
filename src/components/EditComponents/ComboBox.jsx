@@ -1,7 +1,6 @@
-import React, { useContext } from "react";
+import React from "react";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
-import { ChartContext } from "../../store/chartStore";
 import { useDispatch } from "react-redux";
 import { updateDataType } from "../../store";
 
@@ -13,8 +12,6 @@ const ComboBox = ({ panelID }) => {
     "Pie Chart",
     "Time Series",
   ];
-  const [chartState, dispatch] = useContext(ChartContext);
-  console.log(chartState);
 
   const dispatch1 = useDispatch();
 

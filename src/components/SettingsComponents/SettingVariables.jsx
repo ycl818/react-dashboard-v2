@@ -70,6 +70,7 @@ const SettingVariables = () => {
             const filteredVariableArray = variableArray.filter(
               (variable) => variable.variableName !== target
             );
+            // eslint-disable-next-line
             filteredVariableArray.map((variable) => {
               if (panelURL.includes(`@${variable.variableName}`)) {
                 panelURL = panelURL.replace(
@@ -135,7 +136,7 @@ const SettingVariables = () => {
           newRow.defaultValue
         );
       }
-
+      // eslint-disable-next-line
       variableArray.map((variable) => {
         if (panelURL.includes(`@${variable.variableName}`)) {
           panelURL = panelURL.replace(

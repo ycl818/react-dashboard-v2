@@ -1,5 +1,4 @@
 import {
-  Button,
   Dialog,
   DialogActions,
   DialogContent,
@@ -892,8 +891,6 @@ const ChooseDashboard = ({ selectDashboard, setSelectDashboard }) => {
       },
     },
   };
-
-  const data3 = {};
 
   const handleOnclick = (name) => {
     console.log("file: ChooseDashboard.jsx:1304 ~ handleOnclick ~ name:", name);
