@@ -1,4 +1,4 @@
-import { Box, Button, Divider, TextField } from "@mui/material";
+import { Box, Button, TextField } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addDataPanel,
@@ -7,7 +7,6 @@ import {
   updateDataSourceWithURL,
   removeDataPanel,
   updataDataPanel,
-  updateDataSourceName,
 } from "../../store";
 import { v4 as uuidv4 } from "uuid";
 import "ace-builds/src-noconflict/mode-json";
@@ -19,7 +18,6 @@ import InspectDrawer from "../InspectDrawer";
 import VariableAccordion from "./DataSourceComponent/VariableAccordion";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
-import DataPanelName from "./DataSourceComponent/DataPanelName";
 
 const StyleButton = () => {
   return (
@@ -41,41 +39,13 @@ const StyleButton = () => {
   );
 };
 
-const DataSourceLabel = ({ data, dispatch, panelID }) => {
-  const [initialValue] = useState(data.dataLabel);
-
-  const handleDataSourceLabel = (e) => {
-    if (data.onChange) {
-      data.onChange(e.target.innerHTML);
-    }
-    const dataPanelID = e.target.id;
-    const name = e.target.outerText;
-    dispatch(updateDataSourceName({ panelID, dataPanelID, name }));
-  };
-
-  return (
-    <Box
-      component="div"
-      sx={{}}
-      id={data.dataName}
-      // overflow="hidden"
-      contentEditable="true"
-      suppressContentEditableWarning={true}
-      onInput={handleDataSourceLabel}
-      dangerouslySetInnerHTML={{ _html: initialValue }}
-    >
-      {data.dataLabel}
-    </Box>
-  );
-};
-
 const DataSourceBlock = ({ panelID }) => {
   const dispatch = useDispatch();
   const textRef = useRef("");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [targetDataPanel, setTargetDataPanel] = useState("");
 
-  const { datasource_url, fetchError, fetchErrorMessage, dataArray } =
+  let { datasource_url, fetchError, fetchErrorMessage, dataArray } =
     useSelector((state) => {
       const panelArray = state.widget.widgetArray;
       const targetPanel = panelArray.filter((panel) => panel.i === panelID);
@@ -100,7 +70,23 @@ const DataSourceBlock = ({ panelID }) => {
       };
     });
 
-  const [textValue, setTextValue] = useState([]);
+  const copiedArrayFromStore = [...dataArray];
+
+  const [textValue, setTextValue] = useState(
+    copiedArrayFromStore.length >= 1
+      ? copiedArrayFromStore
+      : [
+          {
+            id: uuidv4(),
+            label: "yo",
+            datasource: null,
+            datasource_url: "",
+            dataDetail: null,
+            fetchError: false,
+            fetchErrorMessage: "",
+          },
+        ]
+  );
 
   let variablesArray = useSelector((state) => {
     return state.variable.variableArray;
@@ -160,36 +146,65 @@ const DataSourceBlock = ({ panelID }) => {
     );
   };
 
-  const TypeHandler = (e) => {
+  const TypeHandler = (e, index) => {
     const targetDataPanel = e.target.name;
     // immediately fetch here
     const targetDataPanelURL = e.target.value;
     // for showing url text
-    setTextValue((prevState) => {
-      return [
-        ...prevState,
-        { dataName: targetDataPanel, datasource_url: targetDataPanelURL },
-      ];
-    });
+
+    let texts = [...textValue];
     console.log(
-      "🚀 ~ file: DataSourceBlock.jsx:73 ~ DataSourceBlock ~ textValue:",
+      "🚀 ~ file: DataSourceBlock.jsx:156 ~ TypeHandler ~ texts:",
+      texts
+    );
+
+    texts[index].datasource_url = e.target.value;
+
+    setTextValue(texts);
+
+    //fetchURl(variablesArray, targetDataPanelURL, targetDataPanel);
+  };
+
+  const handleAddDataPanel = (e) => {
+    e.preventDefault();
+    const values = [...textValue];
+    values.push({
+      id: uuidv4(),
+      label: "Name",
+      datasource: null,
+      datasource_url: "",
+      dataDetail: null,
+      fetchError: false,
+      fetchErrorMessage: "",
+    });
+    setTextValue(values);
+  };
+
+  const handleTitle = (e, index) => {
+    console.log("🚀 ~ file: DataSourceBlock.jsx:167 ~ handleTitle ~ e:", e);
+    const texts = [...textValue];
+    texts[index].label = e.currentTarget.innerHTML;
+    setTextValue(texts);
+  };
+
+  const SaveLinkIntoStore = (e, index) => {
+    // onBlur save into store
+    console.log(
+      "🚀 ~ file: DataSourceBlock.jsx:164 ~ SaveLinkIntoStore ~ e:",
       textValue
     );
-    fetchURl(variablesArray, targetDataPanelURL, targetDataPanel);
-  };
-  const SaveLinkIntoStore = (e) => {
-    // onBlur save into store
+    dispatch(updataDataPanel({ textValue, panelID }));
     const dataPanelID = e.target.name;
     const datasource_url = e.target.value;
     const datasourceName = "link";
-    dispatch(
-      updateDataSourceWithURL({
-        panelID,
-        dataPanelID,
-        datasource_url,
-        datasourceName,
-      })
-    );
+    // dispatch(
+    //   updateDataSourceWithURL({
+    //     panelID,
+    //     dataPanelID,
+    //     datasource_url,
+    //     datasourceName,
+    //   })
+    // );
   };
 
   const dataPanelError = (id) => {
@@ -204,7 +219,7 @@ const DataSourceBlock = ({ panelID }) => {
   };
 
   const dataPanelURL = (id) => {
-    const res = textValue?.filter((text) => text.dataName === id);
+    const res = datasource_url?.filter((text) => text.dataName === id);
     console.log("aaaa", res);
     return res[0]?.datasource_url;
   };
@@ -212,32 +227,30 @@ const DataSourceBlock = ({ panelID }) => {
   //border: "1px solid black"
   return (
     <Box sx={{ margin: "5px" }}>
-      {dataArray?.map((data) => {
-        const error = dataPanelError(data.dataName);
-        const errorMsg = dataPanelErrorMessage(data.dataName);
-
+      {textValue?.map((obj, index) => {
         return (
-          <div
-            key={data.dataName}
-            style={{
-              backgroundColor: "rgba(255,255,255,0.01)",
-              margin: "1.5rem 0rem",
-            }}
-          >
+          <div key={obj.id}>
             <Box
               display="flex"
               justifyContent="space-between"
               alignItems="center"
               sx={{ margin: "0.5rem 0rem" }}
             >
-              <DataPanelName
-                dataPanelName={data.dataLabel}
-                dataPanelID={data.dataName}
-                panelID={panelID}
-              />
+              <Box
+                contentEditable="true"
+                suppressContentEditableWarning={true}
+                component="div"
+                sx={{}}
+                overflow="hidden"
+                onInput={(e) => {
+                  handleTitle(e, index);
+                }}
+              >
+                {obj.label}
+              </Box>
               <Button
                 onClick={() => {
-                  const dataPanelID = data.dataName;
+                  const dataPanelID = obj.id;
                   dispatch(removeDataPanel({ panelID, dataPanelID }));
                 }}
               >
@@ -248,22 +261,27 @@ const DataSourceBlock = ({ panelID }) => {
             <Box display="flex" alignItems="center">
               <StyleButton />
               <TextField
-                key={data.dataName}
-                error={error}
+                key={obj.id}
+                //error={error}
+
+                value={obj.datasource_url || ""}
                 sx={{ backgroundColor: "#141414" }}
                 fullWidth
                 hiddenLabel
-                id="filled-hidden-label-small"
-                name={data.dataName}
+                id={obj.id}
+                name={obj.id}
                 variant="filled"
-                helperText={errorMsg ? `${errorMsg}` : ""}
+                //helperText={errorMsg ? `${errorMsg}` : ""}
                 size="small"
-                defaultValue={data.datasource_url}
-                onChange={TypeHandler}
-                onBlur={SaveLinkIntoStore}
+                onChange={(e) => {
+                  TypeHandler(e, index);
+                }}
+                onBlur={(e) => {
+                  SaveLinkIntoStore(e, index);
+                }}
               />
               <Button
-                name={data.dataName}
+                name={obj.id}
                 variant="contained"
                 style={{
                   textTransform: "unset",
@@ -293,15 +311,6 @@ const DataSourceBlock = ({ panelID }) => {
             ) : (
               ""
             )} */}
-            <Divider
-              sx={{
-                backgroundColor: "white",
-                borderBottomWidth: 1,
-                width: "100%",
-                textAlign: "center",
-                marginTop: "1rem",
-              }}
-            />
           </div>
         );
       })}
@@ -312,8 +321,9 @@ const DataSourceBlock = ({ panelID }) => {
         setDrawerOpen={setDrawerOpen}
       />
       <Button
-        onClick={() => {
-          dispatch(addDataPanel({ panelID }));
+        onClick={(e) => {
+          // dispatch(addDataPanel({ panelID }));
+          handleAddDataPanel(e);
         }}
       >
         <AddIcon />

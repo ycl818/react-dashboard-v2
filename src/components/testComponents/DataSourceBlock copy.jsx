@@ -1,4 +1,4 @@
-import { Box, Button, Divider, TextField } from "@mui/material";
+import { Box, Button, TextField } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addDataPanel,
@@ -6,20 +6,17 @@ import {
   updateData,
   updateDataSourceWithURL,
   removeDataPanel,
-  updataDataPanel,
-  updateDataSourceName,
 } from "../../store";
-import { v4 as uuidv4 } from "uuid";
+
 import "ace-builds/src-noconflict/mode-json";
 import "ace-builds/src-noconflict/theme-monokai";
 import "ace-builds/src-noconflict/ext-language_tools";
 import { useRef, useState } from "react";
 import axios from "axios";
 import InspectDrawer from "../InspectDrawer";
-import VariableAccordion from "./DataSourceComponent/VariableAccordion";
+import VariableAccordion from "../EditComponents/DataSourceComponent/VariableAccordion";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
-import DataPanelName from "./DataSourceComponent/DataPanelName";
 
 const StyleButton = () => {
   return (
@@ -38,34 +35,6 @@ const StyleButton = () => {
     >
       URL
     </Button>
-  );
-};
-
-const DataSourceLabel = ({ data, dispatch, panelID }) => {
-  const [initialValue] = useState(data.dataLabel);
-
-  const handleDataSourceLabel = (e) => {
-    if (data.onChange) {
-      data.onChange(e.target.innerHTML);
-    }
-    const dataPanelID = e.target.id;
-    const name = e.target.outerText;
-    dispatch(updateDataSourceName({ panelID, dataPanelID, name }));
-  };
-
-  return (
-    <Box
-      component="div"
-      sx={{}}
-      id={data.dataName}
-      // overflow="hidden"
-      contentEditable="true"
-      suppressContentEditableWarning={true}
-      onInput={handleDataSourceLabel}
-      dangerouslySetInnerHTML={{ _html: initialValue }}
-    >
-      {data.dataLabel}
-    </Box>
   );
 };
 
@@ -217,24 +186,16 @@ const DataSourceBlock = ({ panelID }) => {
         const errorMsg = dataPanelErrorMessage(data.dataName);
 
         return (
-          <div
-            key={data.dataName}
-            style={{
-              backgroundColor: "rgba(255,255,255,0.01)",
-              margin: "1.5rem 0rem",
-            }}
-          >
+          <>
             <Box
               display="flex"
               justifyContent="space-between"
               alignItems="center"
               sx={{ margin: "0.5rem 0rem" }}
             >
-              <DataPanelName
-                dataPanelName={data.dataLabel}
-                dataPanelID={data.dataName}
-                panelID={panelID}
-              />
+              <Box component="div" sx={{}} overflow="hidden">
+                DataSourceBlock
+              </Box>
               <Button
                 onClick={() => {
                   const dataPanelID = data.dataName;
@@ -258,7 +219,6 @@ const DataSourceBlock = ({ panelID }) => {
                 variant="filled"
                 helperText={errorMsg ? `${errorMsg}` : ""}
                 size="small"
-                defaultValue={data.datasource_url}
                 onChange={TypeHandler}
                 onBlur={SaveLinkIntoStore}
               />
@@ -282,7 +242,7 @@ const DataSourceBlock = ({ panelID }) => {
                 Query inspector
               </Button>
             </Box>
-            {/* {variablesArray.length ? (
+            {variablesArray.length ? (
               <VariableAccordion
                 fetchURl={fetchURl}
                 panelID={panelID}
@@ -292,17 +252,8 @@ const DataSourceBlock = ({ panelID }) => {
               />
             ) : (
               ""
-            )} */}
-            <Divider
-              sx={{
-                backgroundColor: "white",
-                borderBottomWidth: 1,
-                width: "100%",
-                textAlign: "center",
-                marginTop: "1rem",
-              }}
-            />
-          </div>
+            )}
+          </>
         );
       })}
       <InspectDrawer

@@ -13,7 +13,7 @@ import "ace-builds/src-noconflict/theme-twilight";
 
 import "ace-builds/src-noconflict/ext-language_tools";
 
-const InspectDrawer = ({ panelID, setDrawerOpen, drawerOpen }) => {
+const InspectDrawer = ({ panelID, setDrawerOpen, drawerOpen, dataPanelID }) => {
   const [tabIndex, setTabIndex] = useState(0);
   const handleTabChange = (event, newTabIndex) => {
     setTabIndex(newTabIndex);
@@ -22,8 +22,12 @@ const InspectDrawer = ({ panelID, setDrawerOpen, drawerOpen }) => {
   const { dataDetail, data } = useSelector((state) => {
     const panelArray = state.widget.widgetArray;
     const targetPanel = panelArray.filter((panel) => panel.i === panelID);
+    const dataIndex = targetPanel[0]?.data.findIndex(
+      (data) => data.dataName === dataPanelID
+    );
+
     return {
-      dataDetail: targetPanel[0]?.data?.dataDetail,
+      dataDetail: targetPanel[0]?.data[dataIndex]?.dataDetail,
       data: targetPanel[0]?.data,
     };
   });

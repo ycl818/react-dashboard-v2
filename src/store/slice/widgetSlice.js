@@ -1,4 +1,5 @@
 import { createSlice, nanoid } from "@reduxjs/toolkit";
+
 const initialState = {
   dashboardName: "New dashboard",
   widgetArray:
@@ -10,14 +11,18 @@ const initialState = {
         w: 4,
         h: 2,
         panelName: "",
-        data: {
-          datasource: null,
-          datasource_url: null,
-          dataType: null,
-          dataDetail: null,
-        },
-        fetchError: false,
-        fetchErrorMessage: "",
+        data: [
+          {
+            dataLabel: "New Source",
+            dataName: nanoid(),
+            datasource: null,
+            datasource_url: null,
+            dataType: null,
+            dataDetail: null,
+            fetchError: false,
+            fetchErrorMessage: "",
+          },
+        ],
       },
     ] || [],
 };
@@ -37,8 +42,14 @@ const widgetSlice = createSlice({
       const panelIndex = state.widgetArray.findIndex(
         (panel) => panel.i === action.payload.id
       );
-      state.widgetArray[panelIndex].fetchError = action.payload.res;
-      state.widgetArray[panelIndex].fetchErrorMessage = action.payload.message;
+      const dataPanelId = state.widgetArray[panelIndex].data.findIndex(
+        (data) => data.dataName === action.payload.dataPanelID
+      );
+
+      state.widgetArray[panelIndex].data[dataPanelId].fetchError =
+        action.payload.res;
+      state.widgetArray[panelIndex].data[dataPanelId].fetchErrorMessage =
+        action.payload.message;
     },
     updateDataByURL: (state, action) => {
       console.log(action.payload);
@@ -65,9 +76,13 @@ const widgetSlice = createSlice({
       const panelIndex = state.widgetArray.findIndex(
         (panel) => panel.i === action.payload.panelID
       );
-      state.widgetArray[panelIndex].data.datasource_url =
+      const dataPanelId = state.widgetArray[panelIndex].data.findIndex(
+        (data) => data.dataName === action.payload.dataPanelID
+      );
+
+      state.widgetArray[panelIndex].data[dataPanelId].datasource_url =
         action.payload.datasource_url;
-      state.widgetArray[panelIndex].data.datasource =
+      state.widgetArray[panelIndex].data[dataPanelId].datasource =
         action.payload.datasourceName;
     },
     updatePanelName: (state, action) => {
@@ -89,11 +104,63 @@ const widgetSlice = createSlice({
       state.widgetArray[panelIndex].data.dataType = action.payload.selectedType;
     },
     updateData: (state, action) => {
+      console.log("🚀 ~ file: widgetSlice.js:107 ~ action:", action.payload);
+      const panelIndex = state.widgetArray.findIndex(
+        (panel) => panel.i === action.payload.panelID
+      );
+      const dataPanelId = state.widgetArray[panelIndex].data.findIndex(
+        (data) => data.dataName === action.payload.dataPanelID
+      );
+
+      state.widgetArray[panelIndex].data[dataPanelId].dataDetail =
+        action.payload?.data;
+    },
+    updataDataPanel: (state, action) => {
+      console.log("🚀 ~ file: widgetSlice.js:117 ~ action:", action.payload);
       const panelIndex = state.widgetArray.findIndex(
         (panel) => panel.i === action.payload.panelID
       );
 
-      state.widgetArray[panelIndex].data.dataDetail = action.payload?.data;
+      state.widgetArray[panelIndex].data = action.payload.textValue;
+    },
+    addDataPanel: (state, action) => {
+      const panelIndex = state.widgetArray.findIndex(
+        (panel) => panel.i === action.payload.panelID
+      );
+      state.widgetArray[panelIndex].data = [
+        ...state.widgetArray[panelIndex].data,
+        {
+          dataLabel: "New Source",
+          dataName: nanoid(),
+          datasource: null,
+          datasource_url: null,
+          dataType: null,
+          dataDetail: null,
+          fetchError: false,
+          fetchErrorMessage: "",
+        },
+      ];
+    },
+    removeDataPanel: (state, action) => {
+      console.log("Remove data panel~~", action.payload);
+      const panelIndex = state.widgetArray.findIndex(
+        (panel) => panel.i === action.payload.panelID
+      );
+      const dataPanelId = state.widgetArray[panelIndex].data.findIndex(
+        (data) => data.dataName === action.payload.dataPanelID
+      );
+
+      state.widgetArray[panelIndex].data.splice(dataPanelId, 1);
+    },
+    updateDataSourceName: (state, action) => {
+      const panelIndex = state.widgetArray.findIndex(
+        (panel) => panel.i === action.payload.panelID
+      );
+      const dataPanelId = state.widgetArray[panelIndex].data.findIndex(
+        (data) => data.dataName === action.payload.dataPanelID
+      );
+      state.widgetArray[panelIndex].data[dataPanelId].dataLabel =
+        action.payload?.name;
     },
     modifyLayouts: (state, action) => {
       // const tempArray = state.widgetArray.map((widget) => ({
@@ -127,12 +194,18 @@ const widgetSlice = createSlice({
           w: 4,
           h: 2,
           panelName: "",
-          data: {
-            datasource: null,
-            datasource_url: null,
-            dataType: null,
-            dataDetail: null,
-          },
+          data: [
+            {
+              dataLabel: "New Source",
+              dataName: nanoid(),
+              datasource: null,
+              datasource_url: null,
+              dataType: null,
+              dataDetail: null,
+              fetchError: false,
+              fetchErrorMessage: "",
+            },
+          ],
           fetchError: false,
           fetchErrorMessage: "",
         },
@@ -169,5 +242,9 @@ export const {
   cleanUpAllPanel,
   updateDashboardName,
   loadUploadDashboardName,
+  addDataPanel,
+  removeDataPanel,
+  updataDataPanel,
+  updateDataSourceName,
 } = widgetSlice.actions;
 export const widgetReducer = widgetSlice.reducer;
