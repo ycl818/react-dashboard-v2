@@ -104,7 +104,7 @@ const widgetSlice = createSlice({
       state.widgetArray[panelIndex].data.dataType = action.payload.selectedType;
     },
     updateData: (state, action) => {
-      console.log("🚀 ~ file: widgetSlice.js:107 ~ action:", action.payload);
+      // console.log("🚀 ~ file: widgetSlice.js:107 ~ action:", action.payload);
       const panelIndex = state.widgetArray.findIndex(
         (panel) => panel.i === action.payload.panelID
       );

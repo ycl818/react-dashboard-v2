@@ -7,12 +7,13 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   adjustVariable,
   fetchErrorShowBorder,
-  updateDataByURL,
+  updateData,
+  updateDataSourceWithURL,
 } from "../../../store";
 import axios from "axios";
 
@@ -20,27 +21,37 @@ const VariableAccordion = ({
   fetchURl,
   panelID,
   setTextValue,
-  handleSetURL,
-  textRef,
+  textValue,
+  dataPanelID,
+  inputs,
+  setInputs,
 }) => {
+  // console.log("file: VariableAccordion.jsx:27 ~ textValue:", textValue);
   const dispatch = useDispatch();
   let variablesArray = useSelector((state) => {
     return state.variable.variableArray;
   });
+  console.log(
+    "file: VariableAccordion.jsx:32 ~ variablesArray ~ variablesArray:",
+    variablesArray
+  );
 
-  const { datasource_url, allPanelURLs } = useSelector((state) => {
+  const { allPanelURLs } = useSelector((state) => {
     const panelArray = state.widget.widgetArray;
     const allPanelURLs = panelArray.map((panel) => {
-      return { id: panel.i, url: panel.data.datasource_url };
+      const siglePanelURLs = panel.data.map((dataPanel) => {
+        return {
+          dataPanelID: dataPanel.dataName,
+          dataPanelURL: dataPanel.datasource_url,
+        };
+      });
+      return { id: panel.i, url: siglePanelURLs };
     });
-    const targetPanel = panelArray.filter((panel) => panel.i === panelID);
+
     return {
-      datasource_url: targetPanel[0]?.data?.datasource_url,
       allPanelURLs,
     };
   });
-
-  const [inputs, setInputs] = useState(variablesArray);
 
   const handleChange = (e) => {
     let updatedVariablesArray = variablesArray.map((variable) => {
@@ -49,55 +60,62 @@ const VariableAccordion = ({
         : variable;
     });
     setInputs(updatedVariablesArray);
-
-    //fetchURl(updatedVariablesArray, textRef.current.value);
+    dispatch(adjustVariable({ inputs }));
   };
 
   const handleOnBlur = (e) => {
     dispatch(adjustVariable({ inputs }));
-    console.log("file: VariableAccordion.jsx:51 ~ handleOnBlur ~ e:", e);
-
     // 1. get all panels url
     // 2. check the urls which contain target variable
     // 3. fectch all target url
-    const filteredURLs = allPanelURLs.filter((panel) =>
-      panel.url.includes(e.target.name)
-    );
-
-    const newPanelsURL = filteredURLs?.map((panel) => {
-      let newUrl = panel.url;
-      inputs.forEach((variable) => {
-        if (newUrl.includes(`@${variable.variableName}`)) {
-          newUrl = newUrl.replace(
-            new RegExp(`@${variable.variableName}`, "g"),
-            variable.defaultValue
-          );
-        }
+    const newPanelsURL = allPanelURLs.map((panel) => {
+      const newSigleDataPanelURLs = panel.url.map((dataPanel) => {
+        let newUrl = dataPanel.dataPanelURL;
+        inputs.forEach((variable) => {
+          if (newUrl?.includes(`@${variable.variableName}`)) {
+            newUrl = newUrl.replace(
+              new RegExp(`@${variable.variableName}`, "g"),
+              variable.defaultValue
+            );
+          }
+        });
+        return { dataPanelID: dataPanel.dataPanelID, dataPanelURL: newUrl };
       });
-      return { id: panel.id, url: newUrl };
+      return { id: panel.id, url: newSigleDataPanelURLs };
     });
 
-    Promise.all(
-      newPanelsURL.map(async (panel) => {
-        try {
-          const response = await axios.get(panel.url);
-          const id = panel.id;
-          const result = response.data;
-          const res = false;
-          const message = "";
-          dispatch(updateDataByURL({ result, id }));
-          dispatch(fetchErrorShowBorder({ res, id, message }));
-        } catch (error) {
-          const id = panel.id;
-          const res = true;
-          const message = error.message;
+    console.log(
+      "file: VariableAccordion.jsx:124 ~ newPanelsURL ~ newPanelsURL:",
+      newPanelsURL
+    );
 
-          console.log(
-            "file: VariableAccordion.jsx:84 ~ filteredURLs.map ~ panel.url:",
-            panel.url
-          );
-          dispatch(fetchErrorShowBorder({ res, id, message }));
-        }
+    Promise.all(
+      newPanelsURL.map((panel) => {
+        panel.url.forEach(async (dataPanel) => {
+          try {
+            if (!dataPanel.dataPanelURL) return;
+            const response = await axios.get(dataPanel.dataPanelURL);
+            const panelID = panel.id;
+            const id = panel.id;
+            const data = response.data;
+            const dataPanelID = dataPanel.dataPanelID;
+            const res = false;
+            const message = "";
+            dispatch(updateData({ data, panelID, dataPanelID }));
+            dispatch(fetchErrorShowBorder({ id, res, message, dataPanelID }));
+          } catch (error) {
+            const id = panel.id;
+            const dataPanelID = dataPanel.dataPanelID;
+            const res = true;
+            const message = error.message;
+
+            console.log(
+              "file: VariableAccordion.jsx:84 ~ filteredURLs.map ~ panel.url:",
+              panel.url
+            );
+            dispatch(fetchErrorShowBorder({ res, id, message, dataPanelID }));
+          }
+        });
       })
     )
       .then((responses) => {
@@ -110,13 +128,30 @@ const VariableAccordion = ({
 
   const handlePasteVariable = (e) => {
     const pasteKey = e.target.value;
-    // eslint-disable-next-line
-    const newDataSouceUrl = datasource_url + "/@" + `${pasteKey}`;
-    setTextValue(newDataSouceUrl);
-    handleSetURL("link", newDataSouceUrl, panelID);
-    // eslint-disable-next-line
-    let cuurentText = textRef.current.value + "/@" + `${pasteKey}`;
-    fetchURl(inputs, cuurentText);
+    let newURL = "";
+    const newState = textValue.map((text) => {
+      if (text.dataName === dataPanelID) {
+        newURL = text.datasource_url + "/@" + `${pasteKey}`;
+        return {
+          ...text,
+          datasource_url: newURL,
+        };
+      }
+      return text;
+    });
+    setTextValue(newState);
+    dispatch(
+      updateDataSourceWithURL({
+        panelID,
+        dataPanelID,
+        datasource_url: newURL,
+        datasourceName: "link",
+      })
+    );
+
+    // let cuurentText = textRef.current.value + "/@" + `${pasteKey}`;
+    console.log("I pastes!!");
+    fetchURl(inputs, newURL, dataPanelID);
   };
 
   return (
@@ -128,7 +163,7 @@ const VariableAccordion = ({
         <AccordionDetails
           sx={{ backgroundColor: "#323232", display: "flex", flexWrap: "wrap" }}
         >
-          {variablesArray.map((variable) => {
+          {variablesArray.map((variable, index) => {
             return (
               <Box
                 sx={{ marginLeft: "1rem", marginTop: "1rem" }}
@@ -161,8 +196,8 @@ const VariableAccordion = ({
                   }}
                   variant="outlined"
                   size="small"
-                  defaultValue={`${variable.defaultValue}`}
-                  value={inputs.defaultValue}
+                  // defaultValue={`${variable.defaultValue}`}
+                  value={inputs[index].defaultValue}
                   onChange={handleChange}
                   onBlur={handleOnBlur}
                 />

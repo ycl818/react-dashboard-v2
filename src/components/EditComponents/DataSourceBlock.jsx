@@ -13,7 +13,7 @@ import { v4 as uuidv4 } from "uuid";
 import "ace-builds/src-noconflict/mode-json";
 import "ace-builds/src-noconflict/theme-monokai";
 import "ace-builds/src-noconflict/ext-language_tools";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import InspectDrawer from "../InspectDrawer";
 import VariableAccordion from "./DataSourceComponent/VariableAccordion";
@@ -41,34 +41,6 @@ const StyleButton = () => {
   );
 };
 
-const DataSourceLabel = ({ data, dispatch, panelID }) => {
-  const [initialValue] = useState(data.dataLabel);
-
-  const handleDataSourceLabel = (e) => {
-    if (data.onChange) {
-      data.onChange(e.target.innerHTML);
-    }
-    const dataPanelID = e.target.id;
-    const name = e.target.outerText;
-    dispatch(updateDataSourceName({ panelID, dataPanelID, name }));
-  };
-
-  return (
-    <Box
-      component="div"
-      sx={{}}
-      id={data.dataName}
-      // overflow="hidden"
-      contentEditable="true"
-      suppressContentEditableWarning={true}
-      onInput={handleDataSourceLabel}
-      dangerouslySetInnerHTML={{ _html: initialValue }}
-    >
-      {data.dataLabel}
-    </Box>
-  );
-};
-
 const DataSourceBlock = ({ panelID }) => {
   const dispatch = useDispatch();
   const textRef = useRef("");
@@ -86,7 +58,6 @@ const DataSourceBlock = ({ panelID }) => {
             datasource_url: data.datasource_url,
           };
         }),
-
         fetchError: targetPanel[0]?.data.map((data) => {
           return { dataName: data.dataName, fetchError: data.fetchError };
         }),
@@ -100,11 +71,15 @@ const DataSourceBlock = ({ panelID }) => {
       };
     });
 
-  const [textValue, setTextValue] = useState([]);
+  const [textValue, setTextValue] = useState(dataArray);
 
   let variablesArray = useSelector((state) => {
     return state.variable.variableArray;
   });
+
+  useEffect(() => {
+    setTextValue(dataArray);
+  }, [addDataPanel, dataArray]);
 
   const fetchURl = async (variablesArray, currentText, dataPanelID) => {
     try {
@@ -165,18 +140,16 @@ const DataSourceBlock = ({ panelID }) => {
     // immediately fetch here
     const targetDataPanelURL = e.target.value;
     // for showing url text
-    setTextValue((prevState) => {
-      return [
-        ...prevState,
-        { dataName: targetDataPanel, datasource_url: targetDataPanelURL },
-      ];
+    const newState = textValue.map((text) => {
+      if (text.dataName === e.target.name)
+        return { ...text, datasource_url: targetDataPanelURL };
+      return text;
     });
-    console.log(
-      "🚀 ~ file: DataSourceBlock.jsx:73 ~ DataSourceBlock ~ textValue:",
-      textValue
-    );
+    setTextValue(newState);
+    SaveLinkIntoStore(e);
     fetchURl(variablesArray, targetDataPanelURL, targetDataPanel);
   };
+
   const SaveLinkIntoStore = (e) => {
     // onBlur save into store
     const dataPanelID = e.target.name;
@@ -205,9 +178,10 @@ const DataSourceBlock = ({ panelID }) => {
 
   const dataPanelURL = (id) => {
     const res = textValue?.filter((text) => text.dataName === id);
-    console.log("aaaa", res);
     return res[0]?.datasource_url;
   };
+
+  const [inputs, setInputs] = useState(variablesArray);
 
   //border: "1px solid black"
   return (
@@ -215,7 +189,7 @@ const DataSourceBlock = ({ panelID }) => {
       {dataArray?.map((data) => {
         const error = dataPanelError(data.dataName);
         const errorMsg = dataPanelErrorMessage(data.dataName);
-
+        const currenturl = dataPanelURL(data.dataName);
         return (
           <div
             key={data.dataName}
@@ -258,7 +232,8 @@ const DataSourceBlock = ({ panelID }) => {
                 variant="filled"
                 helperText={errorMsg ? `${errorMsg}` : ""}
                 size="small"
-                defaultValue={data.datasource_url}
+                //defaultValue={data.datasource_url}
+                value={currenturl}
                 onChange={TypeHandler}
                 onBlur={SaveLinkIntoStore}
               />
@@ -271,8 +246,8 @@ const DataSourceBlock = ({ panelID }) => {
                 }}
                 sx={{
                   fontSize: { sm: "10px", lg: "14px" },
-                  padding: { sm: "0", lg: "0.5rem" },
-                  width: { sm: "5%", lg: "15%" },
+                  padding: { sm: "10px 0px", lg: "0.5rem" },
+                  width: { sm: "15%", lg: "20%" },
                 }}
                 onClick={(e) => {
                   setTargetDataPanel(e.target.name);
@@ -282,17 +257,20 @@ const DataSourceBlock = ({ panelID }) => {
                 Query inspector
               </Button>
             </Box>
-            {/* {variablesArray.length ? (
+            {variablesArray.length ? (
               <VariableAccordion
                 fetchURl={fetchURl}
                 panelID={panelID}
+                dataPanelID={data.dataName}
                 setTextValue={setTextValue}
                 handleSetURL={handleSetURL}
-                textRef={textRef}
+                textValue={textValue}
+                inputs={inputs}
+                setInputs={setInputs}
               />
             ) : (
               ""
-            )} */}
+            )}
             <Divider
               sx={{
                 backgroundColor: "white",

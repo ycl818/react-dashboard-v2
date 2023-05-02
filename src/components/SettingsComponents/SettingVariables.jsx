@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   fetchErrorShowBorder,
   removeVariable,
+  updateData,
   updateDataByURL,
   updateTargetVariable,
 } from "../../store";
@@ -31,6 +32,22 @@ const SettingVariables = () => {
 
     const variableArray = state.variable.variableArray;
     return { panelURLs, variableArray };
+  });
+
+  const { allPanelURLs } = useSelector((state) => {
+    const panelArray = state.widget.widgetArray;
+    const allPanelURLs = panelArray.map((panel) => {
+      const siglePanelURLs = panel.data.map((dataPanel) => {
+        return {
+          dataPanelID: dataPanel.dataName,
+          dataPanelURL: dataPanel.datasource_url,
+        };
+      });
+      return { id: panel.i, url: siglePanelURLs };
+    });
+    return {
+      allPanelURLs,
+    };
   });
 
   const dispatch = useDispatch();
@@ -119,54 +136,78 @@ const SettingVariables = () => {
 
   const handleProcessRowUpdate = (newRow, oldRow) => {
     dispatch(updateTargetVariable({ newRow }));
-    const targetURLs = panelURLs.filter((panel) =>
-      panel.url.includes(newRow.variableName)
+
+    console.log(
+      "file: SettingVariables.jsx:51 ~ const{allPanelURLs}=useSelector ~ allPanelURLs:",
+      allPanelURLs
     );
 
-    const newTargetURLs = targetURLs?.map((panel) => {
-      let panelURL = panel.url;
-      console.log(
-        "file: SettingVariables.jsx:79 ~ newTargetURLs ~ panelURL:",
-        panelURL
-      );
-
-      if (panelURL.includes(newRow.variableName)) {
-        panelURL = panelURL.replace(
-          new RegExp(`@${newRow.variableName}`, "g"),
-          newRow.defaultValue
-        );
-      }
-      // eslint-disable-next-line
-      variableArray.map((variable) => {
-        if (panelURL.includes(`@${variable.variableName}`)) {
-          panelURL = panelURL.replace(
-            new RegExp(`@${variable.variableName}`, "g"),
-            variable.defaultValue
+    const filterFirstPanelsURL = allPanelURLs.map((panel) => {
+      const newSigleDataPanelURLs = panel.url.map((dataPanel) => {
+        let newUrl = dataPanel.dataPanelURL;
+        if (newUrl.includes(newRow.variableName)) {
+          newUrl = newUrl.replace(
+            new RegExp(`@${newRow.variableName}`, "g"),
+            newRow.defaultValue
           );
         }
+        return { dataPanelID: dataPanel.dataPanelID, dataPanelURL: newUrl };
       });
+      return { id: panel.id, url: newSigleDataPanelURLs };
+    });
+    console.log(
+      "file: SettingVariables.jsx:157 ~ filterFirstPanelsURL ~ filterFirstPanelsURL:",
+      filterFirstPanelsURL
+    );
 
-      console.log("file: NEW~ newTargetURLs ~ panelURL:", panelURL);
-      return { id: panel.id, url: panelURL };
+    const filterTwicePanelsURL = filterFirstPanelsURL.map((panel) => {
+      const newSigleDataPanelURLs = panel.url.map((dataPanel) => {
+        let newUrl = dataPanel?.dataPanelURL;
+        variableArray.forEach((variable) => {
+          if (newUrl?.includes(`@${variable.variableName}`)) {
+            newUrl = newUrl.replace(
+              new RegExp(`@${variable.variableName}`, "g"),
+              variable.defaultValue
+            );
+          }
+        });
+        return { dataPanelID: dataPanel.dataPanelID, dataPanelURL: newUrl };
+      });
+      return { id: panel.id, url: newSigleDataPanelURLs };
     });
 
+    console.log(
+      "file: SettingVariables.jsx:177 ~ filterTwicePanelsURL ~ filterTwicePanelsURL:",
+      filterTwicePanelsURL
+    );
+
     Promise.all(
-      newTargetURLs.map(async (panel) => {
-        try {
-          const response = await axios.get(panel.url);
-          const id = panel.id;
-          let result = response?.data;
-          const res = false;
-          const message = "";
-          // find url is in which panel then update
-          dispatch(updateDataByURL({ result, id }));
-          dispatch(fetchErrorShowBorder({ res, id, message }));
-        } catch (error) {
-          const id = panel.id;
-          const res = true;
-          const message = error.message;
-          dispatch(fetchErrorShowBorder({ res, id, message }));
-        }
+      filterTwicePanelsURL.map((panel) => {
+        panel.url.forEach(async (dataPanel) => {
+          try {
+            if (!dataPanel.dataPanelURL) return;
+            const response = await axios.get(dataPanel.dataPanelURL);
+            const panelID = panel.id;
+            const id = panel.id;
+            const data = response.data;
+            const dataPanelID = dataPanel.dataPanelID;
+            const res = false;
+            const message = "";
+            dispatch(updateData({ data, panelID, dataPanelID }));
+            dispatch(fetchErrorShowBorder({ id, res, message, dataPanelID }));
+          } catch (error) {
+            const id = panel.id;
+            const dataPanelID = dataPanel.dataPanelID;
+            const res = true;
+            const message = error.message;
+
+            console.log(
+              "file: VariableAccordion.jsx:84 ~ filteredURLs.map ~ panel.url:",
+              panel.url
+            );
+            dispatch(fetchErrorShowBorder({ res, id, message, dataPanelID }));
+          }
+        });
       })
     )
       .then((responses) => {
@@ -175,6 +216,63 @@ const SettingVariables = () => {
       .catch((error) => {
         console.error(error);
       });
+
+    // const targetURLs = panelURLs.filter((panel) =>
+    //   panel.url.includes(newRow.variableName)
+    // );
+
+    // const newTargetURLs = targetURLs?.map((panel) => {
+    //   let panelURL = panel.url;
+    //   console.log(
+    //     "file: SettingVariables.jsx:79 ~ newTargetURLs ~ panelURL:",
+    //     panelURL
+    //   );
+
+    //   if (panelURL.includes(newRow.variableName)) {
+    //     panelURL = panelURL.replace(
+    //       new RegExp(`@${newRow.variableName}`, "g"),
+    //       newRow.defaultValue
+    //     );
+    //   }
+    //   // eslint-disable-next-line
+    //   variableArray.map((variable) => {
+    //     if (panelURL.includes(`@${variable.variableName}`)) {
+    //       panelURL = panelURL.replace(
+    //         new RegExp(`@${variable.variableName}`, "g"),
+    //         variable.defaultValue
+    //       );
+    //     }
+    //   });
+
+    //   console.log("file: NEW~ newTargetURLs ~ panelURL:", panelURL);
+    //   return { id: panel.id, url: panelURL };
+    // });
+
+    // Promise.all(
+    //   newTargetURLs.map(async (panel) => {
+    //     try {
+    //       const response = await axios.get(panel.url);
+    //       const id = panel.id;
+    //       let result = response?.data;
+    //       const res = false;
+    //       const message = "";
+    //       // find url is in which panel then update
+    //       dispatch(updateDataByURL({ result, id }));
+    //       dispatch(fetchErrorShowBorder({ res, id, message }));
+    //     } catch (error) {
+    //       const id = panel.id;
+    //       const res = true;
+    //       const message = error.message;
+    //       dispatch(fetchErrorShowBorder({ res, id, message }));
+    //     }
+    //   })
+    // )
+    //   .then((responses) => {
+    //     console.log(responses);
+    //   })
+    //   .catch((error) => {
+    //     console.error(error);
+    //   });
   };
 
   return (
@@ -226,7 +324,7 @@ const SettingVariables = () => {
         <DataGrid
           rows={rows}
           columns={columns}
-          hideFooter={true}
+          //hideFooter={true}
           initialState={{
             pagination: {
               paginationModel: {
