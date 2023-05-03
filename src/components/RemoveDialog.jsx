@@ -36,7 +36,7 @@ const RemoveDialog = ({ confirmDelete, setComfirmDelete, panelID }) => {
       <form onSubmit={handleSubmit}>
         <DialogContent>
           <DialogContentText>
-            Sre you sure you want to remove this panel?
+            Are you sure you want to remove this panel?
           </DialogContentText>
         </DialogContent>
         <DialogActions>

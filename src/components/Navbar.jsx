@@ -122,7 +122,7 @@ export default function ButtonAppBar() {
   };
 
   const [editURL, setEditURL] = useState("");
-  console.log("file: Navbar.jsx:105 ~ ButtonAppBar ~ editURL:", editURL);
+  // console.log("file: Navbar.jsx:105 ~ ButtonAppBar ~ editURL:", editURL);
 
   return (
     <Box sx={{ flexGrow: 1 }}>

@@ -233,7 +233,7 @@ const DataSourceBlock = ({ panelID }) => {
                 helperText={errorMsg ? `${errorMsg}` : ""}
                 size="small"
                 //defaultValue={data.datasource_url}
-                value={currenturl}
+                value={currenturl || ""}
                 onChange={TypeHandler}
                 onBlur={SaveLinkIntoStore}
               />

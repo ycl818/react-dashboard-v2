@@ -68,54 +68,60 @@ const VariableAccordion = ({
     // 1. get all panels url
     // 2. check the urls which contain target variable
     // 3. fectch all target url
-    const newPanelsURL = allPanelURLs.map((panel) => {
-      const newSigleDataPanelURLs = panel.url.map((dataPanel) => {
-        let newUrl = dataPanel.dataPanelURL;
-        inputs.forEach((variable) => {
-          if (newUrl?.includes(`@${variable.variableName}`)) {
-            newUrl = newUrl.replace(
-              new RegExp(`@${variable.variableName}`, "g"),
-              variable.defaultValue
-            );
-          }
-        });
-        return { dataPanelID: dataPanel.dataPanelID, dataPanelURL: newUrl };
-      });
-      return { id: panel.id, url: newSigleDataPanelURLs };
-    });
-
+    const targetVariable = e.target.name;
     console.log(
-      "file: VariableAccordion.jsx:124 ~ newPanelsURL ~ newPanelsURL:",
-      newPanelsURL
+      "file: VariableAccordion.jsx:72 ~ handleOnBlur ~ targetVariable:",
+      typeof targetVariable
     );
 
-    Promise.all(
-      newPanelsURL.map((panel) => {
-        panel.url.forEach(async (dataPanel) => {
-          try {
-            if (!dataPanel.dataPanelURL) return;
-            const response = await axios.get(dataPanel.dataPanelURL);
-            const panelID = panel.id;
-            const id = panel.id;
-            const data = response.data;
-            const dataPanelID = dataPanel.dataPanelID;
-            const res = false;
-            const message = "";
-            dispatch(updateData({ data, panelID, dataPanelID }));
-            dispatch(fetchErrorShowBorder({ id, res, message, dataPanelID }));
-          } catch (error) {
-            const id = panel.id;
-            const dataPanelID = dataPanel.dataPanelID;
-            const res = true;
-            const message = error.message;
+    const filteredArray = allPanelURLs
+      .flatMap((panel) => panel.url.map((url) => ({ id: panel.id, ...url })))
+      .filter(({ dataPanelURL }) =>
+        dataPanelURL?.includes(`${targetVariable}`)
+      );
 
-            console.log(
-              "file: VariableAccordion.jsx:84 ~ filteredURLs.map ~ panel.url:",
-              panel.url
-            );
-            dispatch(fetchErrorShowBorder({ res, id, message, dataPanelID }));
-          }
-        });
+    const newFilteredArray = filteredArray.map((item) => {
+      let newUrl = item.dataPanelURL;
+      inputs.forEach((variable) => {
+        if (newUrl?.includes(`@${variable.variableName}`)) {
+          newUrl = newUrl.replace(
+            new RegExp(`@${variable.variableName}`, "g"),
+            variable.defaultValue
+          );
+        }
+      });
+      return {
+        id: item.id,
+        dataPanelID: item.dataPanelID,
+        dataPanelURL: newUrl,
+      };
+    });
+
+    Promise.all(
+      newFilteredArray.map(async (item) => {
+        try {
+          if (!item.dataPanelURL) return;
+          const response = await axios.get(item.dataPanelURL);
+          const panelID = item.id;
+          const id = item.id;
+          const data = response.data;
+          const dataPanelID = item.dataPanelID;
+          const res = false;
+          const message = "";
+          dispatch(updateData({ data, panelID, dataPanelID }));
+          dispatch(fetchErrorShowBorder({ id, res, message, dataPanelID }));
+        } catch (error) {
+          const id = item.id;
+          const dataPanelID = item.dataPanelID;
+          const res = true;
+          const message = error.message;
+
+          console.log(
+            "file: VariableAccordion.jsx:84 ~ filteredURLs.map ~ panel.url:",
+            item.url
+          );
+          dispatch(fetchErrorShowBorder({ res, id, message, dataPanelID }));
+        }
       })
     )
       .then((responses) => {

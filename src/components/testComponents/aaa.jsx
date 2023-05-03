@@ -15,7 +15,7 @@ import "ace-builds/src-noconflict/ext-language_tools";
 import { useRef, useState } from "react";
 import axios from "axios";
 import InspectDrawer from "../InspectDrawer";
-import VariableAccordion from "./DataSourceComponent/VariableAccordion";
+import VariableAccordion from "../EditComponents/DataSourceComponent/VariableAccordion";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 

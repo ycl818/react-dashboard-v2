@@ -1,11 +1,7 @@
 import { Box, Button, TextField } from "@mui/material";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  adjustVariable,
-  fetchErrorShowBorder,
-  updateDataByURL,
-} from "../store";
+import { adjustVariable, fetchErrorShowBorder, updateData } from "../store";
 import axios from "axios";
 
 const VariablesBlock = () => {
@@ -16,11 +12,20 @@ const VariablesBlock = () => {
 
   const [inputs, setInputs] = useState(variablesArray);
 
-  const { panelURLs } = useSelector((state) => {
-    const panelURLs = state.widget.widgetArray.map((panel) => {
-      return { id: panel.i, url: panel.data.datasource_url };
+  const { allPanelURLs } = useSelector((state) => {
+    const panelArray = state.widget.widgetArray;
+    const allPanelURLs = panelArray.map((panel) => {
+      const siglePanelURLs = panel.data.map((dataPanel) => {
+        return {
+          dataPanelID: dataPanel.dataName,
+          dataPanelURL: dataPanel.datasource_url,
+        };
+      });
+      return { id: panel.i, url: siglePanelURLs };
     });
-    return { panelURLs };
+    return {
+      allPanelURLs,
+    };
   });
 
   const handleChange = (e) => {
@@ -38,16 +43,12 @@ const VariablesBlock = () => {
       step 1: check panels which contains modified variables
     */
 
-    const filteredURLs = panelURLs.filter((panel) =>
-      panel.url.includes(e.target.name)
-    );
-    console.log(
-      "file: VariablesBlock.jsx:44 ~ handleOnBlur ~ filteredURLs:",
-      filteredURLs
-    );
+    const targetArray = allPanelURLs
+      .flatMap((panel) => panel.url.map((url) => ({ id: panel.id, ...url })))
+      .filter(({ dataPanelURL }) => dataPanelURL.includes(e.target.name));
 
-    const newPanelsURL = filteredURLs?.map((panel) => {
-      let newUrl = panel.url;
+    const newPanelsURL = targetArray?.map((item) => {
+      let newUrl = item.dataPanelURL;
       inputs.forEach((variable) => {
         if (newUrl.includes(`@${variable.variableName}`)) {
           newUrl = newUrl.replace(
@@ -56,25 +57,32 @@ const VariablesBlock = () => {
           );
         }
       });
-      return { id: panel.id, url: newUrl };
+      return {
+        id: item.id,
+        dataPanelID: item.dataPanelID,
+        dataPanelURL: newUrl,
+      };
     });
     // Step 2: Send all URLs at the same time using Promise.all()
     Promise.all(
-      newPanelsURL.map(async (panel) => {
+      newPanelsURL.map(async (item) => {
         try {
-          const response = await axios.get(panel.url);
-          const id = panel.id;
-          let result = response?.data;
+          const response = await axios.get(item.dataPanelURL);
+          const id = item.id;
+          const panelID = item.id;
+          const data = response.data;
+          const dataPanelID = item.dataPanelID;
           const res = false;
           const message = "";
-          // find url is in which panel then update
-          dispatch(updateDataByURL({ result, id }));
-          dispatch(fetchErrorShowBorder({ res, id, message }));
+          // find url is in which item then update
+          dispatch(updateData({ data, panelID, dataPanelID }));
+          dispatch(fetchErrorShowBorder({ id, res, message, dataPanelID }));
         } catch (error) {
-          const id = panel.id;
+          const id = item.id;
           const res = true;
+          const dataPanelID = item.dataPanelID;
           const message = error.message;
-          dispatch(fetchErrorShowBorder({ res, id, message }));
+          dispatch(fetchErrorShowBorder({ res, id, message, dataPanelID }));
           console.log(
             "file: variablesArea.jsx:65 ~ newPanelsURL.map ~ error:",
             error

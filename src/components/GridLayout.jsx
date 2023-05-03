@@ -24,7 +24,7 @@ const GridLayout = () => {
   //   isFetchErrorArray
   // );
   const widgetA = useSelector((state) => state.widget.widgetArray);
-  console.log("file: GridLayout.jsx:27 ~ GridLayout ~ widgetA:", widgetA);
+  //console.log("file: GridLayout.jsx:27 ~ GridLayout ~ widgetA:", widgetA);
   //const layouts = useSelector((state) => state.widget.widgetArray);
   //console.log(widgetA);
   //console.log(widgetA[0].data.dataDetail);
