@@ -189,8 +189,6 @@ const widgetSlice = createSlice({
               fetchErrorMessage: "",
             },
           ],
-          fetchError: false,
-          fetchErrorMessage: "",
         },
       ];
     },
