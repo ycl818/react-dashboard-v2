@@ -73,7 +73,6 @@ const GridLayout = () => {
         }}
       >
         {widgetA?.map((widget, index) => {
-          console.log(widget.data);
           const hasFetchError = widget.data.some(
             (element) => element.fetchError === true
           );

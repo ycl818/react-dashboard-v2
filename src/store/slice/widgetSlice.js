@@ -45,27 +45,10 @@ const widgetSlice = createSlice({
       const dataPanelId = state.widgetArray[panelIndex].data.findIndex(
         (data) => data.dataName === action.payload.dataPanelID
       );
-
       state.widgetArray[panelIndex].data[dataPanelId].fetchError =
         action.payload.res;
       state.widgetArray[panelIndex].data[dataPanelId].fetchErrorMessage =
         action.payload.message;
-    },
-    updateDataByURL: (state, action) => {
-      console.log(action.payload);
-
-      const panelIndex = state.widgetArray.findIndex(
-        (panel) => panel.i === action.payload.id
-      );
-      state.widgetArray[panelIndex].data.dataDetail = action.payload.result;
-    },
-    pasteVariableIntoDataSourceURL: (state, action) => {
-      console.log("file: widgetSlice.js:129 ~ action:", action.payload);
-      const panelIndex = state.widgetArray.findIndex(
-        (panel) => panel.i === action.payload.panelID
-      );
-      state.widgetArray[panelIndex].data.datasource_url =
-        action.payload.newDataSouceUrl;
     },
     fetchExistDashboard: (state, action) => {
       console.log(action.payload.data);
@@ -236,8 +219,6 @@ export const {
   updatePanelName,
   updateDataSourceWithURL,
   fetchExistDashboard,
-  pasteVariableIntoDataSourceURL,
-  updateDataByURL,
   fetchErrorShowBorder,
   cleanUpAllPanel,
   updateDashboardName,
