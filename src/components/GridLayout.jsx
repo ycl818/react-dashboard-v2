@@ -73,7 +73,10 @@ const GridLayout = () => {
         }}
       >
         {widgetA?.map((widget, index) => {
-          // console.log(widget.data);
+          console.log(widget.data);
+          const hasFetchError = widget.data.some(
+            (element) => element.fetchError === true
+          );
           let keysArry = [];
           if (widget.data?.dataDetail && widget.data?.dataDetail.length > 0) {
             keysArry = Object.keys(widget.data.dataDetail[0]);
@@ -83,9 +86,7 @@ const GridLayout = () => {
             <Box
               component="div"
               className={
-                widget.fetchError
-                  ? "isFetchError reactGridItem"
-                  : "reactGridItem"
+                hasFetchError ? "isFetchError reactGridItem" : "reactGridItem"
               }
               key={widget.i}
               data-grid={{
