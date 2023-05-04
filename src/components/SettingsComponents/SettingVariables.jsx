@@ -23,6 +23,7 @@ const SettingVariables = () => {
   const rows = useSelector((state) => {
     return state.variable.variableArray;
   });
+  console.log("file: SettingVariables.jsx:26 ~ rows ~ rows:", rows);
 
   const { variableArray } = useSelector((state) => {
     const variableArray = state.variable.variableArray;

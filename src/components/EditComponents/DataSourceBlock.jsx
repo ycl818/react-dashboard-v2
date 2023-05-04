@@ -20,7 +20,8 @@ import VariableAccordion from "./DataSourceComponent/VariableAccordion";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import DataPanelName from "./DataSourceComponent/DataPanelName";
-
+import DataPanelTable from "./DataSourceComponent/DataPanelTable";
+//http://localhost:5001/test/fake_data
 const StyleButton = () => {
   return (
     <Button
@@ -257,6 +258,8 @@ const DataSourceBlock = ({ panelID }) => {
                 Query inspector
               </Button>
             </Box>
+            {data.dataDetail && <DataPanelTable data={data.dataDetail} />}
+
             {variablesArray.length ? (
               <VariableAccordion
                 fetchURl={fetchURl}
@@ -283,6 +286,7 @@ const DataSourceBlock = ({ panelID }) => {
           </div>
         );
       })}
+
       <InspectDrawer
         dataPanelID={targetDataPanel}
         panelID={panelID}
