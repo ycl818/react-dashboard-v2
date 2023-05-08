@@ -21,6 +21,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import DataPanelName from "./DataSourceComponent/DataPanelName";
 import DataPanelTable from "./DataSourceComponent/DataPanelTable";
+import Detect from "../testComponents/Detect";
 //http://localhost:5001/test/fake_data
 const StyleButton = () => {
   return (
@@ -184,6 +185,19 @@ const DataSourceBlock = ({ panelID }) => {
 
   const [inputs, setInputs] = useState(variablesArray);
 
+  const adjustData = (data) => {
+    return data?.map((item) => {
+      return Object.keys(item).reduce((acc, key) => {
+        if (typeof item[key] === "object") {
+          acc[key] = "[object object]";
+        } else {
+          acc[key] = item[key];
+        }
+        return acc;
+      }, {});
+    });
+  };
+
   //border: "1px solid black"
   return (
     <Box sx={{ margin: "5px" }}>
@@ -258,7 +272,6 @@ const DataSourceBlock = ({ panelID }) => {
                 Query inspector
               </Button>
             </Box>
-            {data.dataDetail && <DataPanelTable data={data.dataDetail} />}
 
             {variablesArray.length ? (
               <VariableAccordion
@@ -274,6 +287,16 @@ const DataSourceBlock = ({ panelID }) => {
             ) : (
               ""
             )}
+
+            <Detect />
+            {data.dataDetail &&
+              Array.isArray(data.dataDetail) &&
+              (data.datasource_url !== "http:" ||
+                data.datasource_url !== "http:/") &&
+              data.fetchError !== true &&
+              data.fetchErrorMessage === "" && (
+                <DataPanelTable data={adjustData(data.dataDetail)} />
+              )}
             <Divider
               sx={{
                 backgroundColor: "white",

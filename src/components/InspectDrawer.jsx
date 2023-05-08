@@ -6,7 +6,7 @@ import { Drawer, Tab, Tabs, Box } from "@mui/material";
 
 import AceEditor from "react-ace";
 import { JSONTree } from "react-json-tree";
-
+import "ace-builds/webpack-resolver";
 import "ace-builds/src-noconflict/mode-json";
 import "ace-builds/src-noconflict/theme-monokai";
 import "ace-builds/src-noconflict/theme-twilight";

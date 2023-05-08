@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import * as dfd from "danfojs";
 import { useSelector } from "react-redux";
@@ -15,6 +15,11 @@ function generateRandom() {
 
 const DataPanelTable = ({ data }) => {
   console.log("file: DataPanelTable.jsx:17 ~ DataPanelTable ~ data:", data);
+
+  useEffect(() => {
+    setSourceData(data);
+  }, [data]);
+
   const [sourcedata, setSourceData] = useState(data);
   const [selectedColumnName, setSelectedColumnName] = useState("");
   const [modificationValue, setModificationValue] = useState(0);
@@ -45,42 +50,33 @@ const DataPanelTable = ({ data }) => {
       return;
     }
     console.log("i Click");
-    let updatedData = df.copy();
-    console.log(
-      "file: DataPanelTable.jsx:49 ~ handleModifyColumn ~ updatedData:",
-      updatedData
-    );
+    let updatedData = [...sourcedata];
+    let newdf = new dfd.DataFrame(updatedData);
+    // console.log(
+    //   "file: DataPanelTable.jsx:49 ~ handleModifyColumn ~ updatedData:",
+    //   updatedData
+    // );
 
-    console.log(
-      "file: DataPanelTable.jsx:82 ~ handleModifyColumn ~ selectedColumnName:",
-      updatedData[selectedColumnName]
-    );
+    // console.log(
+    //   "file: DataPanelTable.jsx:82 ~ handleModifyColumn ~ selectedColumnName:",
+    //   updatedData[selectedColumnName]
+    // );
 
     if (selectedOperation === "addition") {
-      updatedData[selectedColumnName] =
-        updatedData[selectedColumnName].add(modificationValue);
+      newdf[selectedColumnName] =
+        newdf[selectedColumnName].add(modificationValue);
     } else if (selectedOperation === "subtraction") {
-      updatedData[selectedColumnName] =
-        updatedData[selectedColumnName].sub(modificationValue);
+      newdf[selectedColumnName] =
+        newdf[selectedColumnName].sub(modificationValue);
     } else if (selectedOperation === "multiplication") {
-      updatedData[selectedColumnName] =
-        updatedData[selectedColumnName].mul(modificationValue);
+      newdf[selectedColumnName] =
+        newdf[selectedColumnName].mul(modificationValue);
     } else if (selectedOperation === "division") {
-      updatedData[selectedColumnName] =
-        updatedData[selectedColumnName].div(modificationValue);
+      newdf[selectedColumnName] =
+        newdf[selectedColumnName].div(modificationValue);
     }
 
-    console.log(
-      "file: DataPanelTable.jsx:77~ handleModifyColumn ~ updatedData:",
-      updatedData
-    );
-
-    console.log(
-      "file: DataPanelTable.jsx:79 ~ handleModifyColumn ~ dfd.toJSON( updatedData.values):",
-      dfd.toJSON(updatedData)
-    );
-
-    setSourceData(dfd.toJSON(updatedData));
+    setSourceData(dfd.toJSON(newdf));
   };
 
   return (
